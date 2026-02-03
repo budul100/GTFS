@@ -113,12 +113,25 @@ namespace GTFS.Filters
 
 
             // filter stops.
+            var levelIds = new HashSet<string>();
             foreach (var stop in feed.Stops)
             {
                 if (stopIds.Contains(stop.Id))
                 { // stop has to be included.
                     stopIds.Add(stop.Id);
                     filteredFeed.Stops.Add(stop);
+                    levelIds.Add(stop.LevelId);
+                }
+            }
+
+
+            // filter levels.
+            foreach (var level in feed.Levels)
+            {
+                if (levelIds.Contains(level.Id))
+                { 
+                    // level has to be included.
+                    filteredFeed.Levels.Add(level);
                 }
             }
 
