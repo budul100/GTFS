@@ -128,7 +128,7 @@ namespace GTFS.Filters
             // filter levels.
             foreach (var level in feed.Levels)
             {
-                if (levelIds.Contains(level.Id))
+                if (levelIds.Contains(level.Id) || levelIds.Contains(level.Id + ".0"))
                 { 
                     // level has to be included.
                     filteredFeed.Levels.Add(level);

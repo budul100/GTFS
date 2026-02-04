@@ -452,6 +452,12 @@ namespace GTFS
                 case "frequencies":
                     this.Read<Frequency>(file, feed, this.ParseFrequency, feed.Frequencies.Add);
                     break;
+                case "levels":
+                    this.Read<Level>(file, feed, this.ParseLevel, feed.Levels.Add);
+                    break;
+                default:
+                    Console.WriteLine($"File {file.Name} nicht bekannt. Ignoriere");
+                    break;
             }
         }
 
@@ -1343,6 +1349,10 @@ namespace GTFS
                     break;
                 case "level_id":
                     stop.LevelId = this.ParseFieldString(header.Name, fieldName, value);
+                    if (stop.LevelId.Contains(".0"))
+                    {
+                        stop.LevelId = stop.LevelId.Replace(".0", "");
+                    }
                     break;
                 case "platform_code":
                     stop.PlatformCode = this.ParseFieldString(header.Name, fieldName, value);
