@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace GTFS.Entities.Enumerations
 {
     /// <summary>
@@ -31,17 +33,38 @@ namespace GTFS.Entities.Enumerations
         /// Regularly scheduled drop off.
         /// </summary>
         Regular = 0,
+
         /// <summary>
         /// No drop off available.
         /// </summary>
-        NoPickup = 1,
+        NoDropOff = 1,
+
         /// <summary>
         /// Must phone agency to arrange drop off.
         /// </summary>
-        PhoneForPickup = 2, // TODO: rename this enum to 'PhoneForDropOff'. it is a breaking change though
+        PhoneForDropOff = 2,
+
         /// <summary>
         /// Must coordinate with driver to arrange drop off.
         /// </summary>
-        DriverForPickup = 3 // TODO: rename this enum to 'DriverForDropOff'. it is a breaking change though
+        DriverForDropOff = 3,
+
+        /// <summary>
+        /// Use NoDropOff instead.
+        /// </summary>
+        [Obsolete("Use NoDropOff instead. This member will be removed in a future version.")]
+        NoPickup = 1,
+
+        /// <summary>
+        /// Use PhoneForDropOff instead.
+        /// </summary>
+        [Obsolete("Use PhoneForDropOff instead. This member will be removed in a future version.")]
+        PhoneForPickup = 2,
+
+        /// <summary>
+        /// Use DriverForDropOff instead.
+        /// </summary>
+        [Obsolete("Use DriverForDropOff instead. This member will be removed in a future version.")]
+        DriverForPickup = 3
     }
 }
