@@ -1,4 +1,11 @@
+<p align="center">
+  <img src="icon.png" width="80" alt="GTFS logo" />
+</p>
+
 # GTFS
+
+[![NuGet](https://img.shields.io/nuget/v/budul100.GTFS.svg)](https://www.nuget.org/packages/budul100.GTFS)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/budul100.GTFS.svg)](https://www.nuget.org/packages/budul100.GTFS)
 
 A .NET library for reading and writing [General Transit Feed Specification (GTFS)](https://gtfs.org/) feeds.
 

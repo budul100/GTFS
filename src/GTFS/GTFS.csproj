@@ -3,23 +3,36 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<AssemblyName>GTFS</AssemblyName>
-		<PackageId>GTFS</PackageId>
+		<PackageId>budul100.GTFS</PackageId>
 		<Title>GTFS</Title>
 		<Authors>budul100</Authors>
-		<Description>GTFS read/write library</Description>
-		<PackageProjectUrl>https://github.com/OsmSharp/GTFS</PackageProjectUrl>
-		<PackageLicenseUrl>https://raw.github.com/OsmSharp/GTFS/master/LICENSE</PackageLicenseUrl>
-		<PackageIconUrl>https://raw.github.com/OsmSharp/GTFS/master/icon.bmp</PackageIconUrl>
-		<PackageTags>routing,GTFS,transit</PackageTags>
+		<Description>A .NET library for reading and writing GTFS (General Transit Feed Specification) feeds.</Description>
+		<PackageProjectUrl>https://github.com/budul100/GTFS</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>gtfs;transit;routing;public-transport</PackageTags>
 		<PackageVersion>4.0.0</PackageVersion>
-	</PropertyGroup>
-
-	<PropertyGroup>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<RepositoryUrl>https://github.com/budul100/GTFS</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+	
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+		<None Include="..\..\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>
