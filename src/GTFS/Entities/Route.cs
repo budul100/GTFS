@@ -31,12 +31,7 @@ namespace GTFS.Entities
     [FileName("route")]
     public class Route : GTFSEntity
     {
-        /// <summary>
-        /// Gets or sets an ID that uniquely identifies a route. The route_id is dataset unique.
-        /// </summary>
-        [Required]
-        [FieldName("route_id")]
-        public string Id { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets an agency for the specified route. Use this field when you are providing data for routes from more than one agency.
@@ -46,11 +41,38 @@ namespace GTFS.Entities
         public string AgencyId { get; set; }
 
         /// <summary>
-        /// Gets or sets the short name of a route. This will often be a short, abstract identifier like "32", "100X", or "Green" that riders use to identify a route, but which doesn't give any indication of what places the route serves. At least one of route_short_name or route_long_name must be specified, or potentially both if appropriate. If the route does not have a short name, please specify a route_long_name and use an empty string as the value for this field.
+        /// Gets or sets a color that corresponds to a route. The color must be provided as a six-character hexadecimal number, for example, 00FFFF. If no color is specified, the default route color is white (FFFFFF).
+        /// </summary>
+        [FieldName("route_color")]
+        public int? Color { get; set; }
+
+        /// <summary>
+        /// Indicates whether a rider can alight from the transit vehicle at any point
+        /// along the vehicle's travel path. Overridden by continuous_drop_off in stop_times.txt.
+        /// </summary>
+        [FieldName("continuous_drop_off")]
+        public ContinuousPickupDropOff? ContinuousDropOff { get; set; }
+
+        /// <summary>
+        /// Indicates whether a rider can board the transit vehicle anywhere along the
+        /// vehicle's travel path. Overridden by continuous_pickup in stop_times.txt.
+        /// </summary>
+        [FieldName("continuous_pickup")]
+        public ContinuousPickupDropOff? ContinuousPickup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description of a route. Please provide useful, quality information. Do not simply duplicate the name of the route. For example, "A trains operate between Inwood-207 St, Manhattan and Far Rockaway-Mott Avenue, Queens at all times. Also from about 6AM until about midnight, additional A trains operate between Inwood-207 St and Lefferts Boulevard (trains typically alternate between Lefferts Blvd and Far Rockaway)."
         /// </summary>
         [Required]
-        [FieldName("route_short_name")]
-        public string ShortName { get; set; }
+        [FieldName("route_desc")]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets an ID that uniquely identifies a route. The route_id is dataset unique.
+        /// </summary>
+        [Required]
+        [FieldName("route_id")]
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the full name of a route. This name is generally more descriptive than the route_short_name and will often include the route's destination or stop. At least one of route_short_name or route_long_name must be specified, or potentially both if appropriate. If the route does not have a long name, please specify a route_short_name and use an empty string as the value for this field.
@@ -60,11 +82,17 @@ namespace GTFS.Entities
         public string LongName { get; set; }
 
         /// <summary>
-        /// Gets or sets the description of a route. Please provide useful, quality information. Do not simply duplicate the name of the route. For example, "A trains operate between Inwood-207 St, Manhattan and Far Rockaway-Mott Avenue, Queens at all times. Also from about 6AM until about midnight, additional A trains operate between Inwood-207 St and Lefferts Boulevard (trains typically alternate between Lefferts Blvd and Far Rockaway)."
+        /// Gets or sets the short name of a route. This will often be a short, abstract identifier like "32", "100X", or "Green" that riders use to identify a route, but which doesn't give any indication of what places the route serves. At least one of route_short_name or route_long_name must be specified, or potentially both if appropriate. If the route does not have a short name, please specify a route_long_name and use an empty string as the value for this field.
         /// </summary>
         [Required]
-        [FieldName("route_desc")]
-        public string Description { get; set; }
+        [FieldName("route_short_name")]
+        public string ShortName { get; set; }
+
+        /// <summary>
+        /// Gets or sets a legible color to use for text drawn against a background of route_color. The color must be provided as a six-character hexadecimal number, for example, FFD700. If no color is specified, the default text color is black (000000).
+        /// </summary>
+        [FieldName("route_text_color")]
+        public int? TextColor { get; set; }
 
         /// <summary>
         /// Gets or sets the type of transportation used on this route.
@@ -79,38 +107,28 @@ namespace GTFS.Entities
         [FieldName("route_url")]
         public string Url { get; set; }
 
-        /// <summary>
-        /// Gets or sets a color that corresponds to a route. The color must be provided as a six-character hexadecimal number, for example, 00FFFF. If no color is specified, the default route color is white (FFFFFF).
-        /// </summary>
-        [FieldName("route_color")]
-        public int? Color { get; set; }
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
-        /// Gets or sets a legible color to use for text drawn against a background of route_color. The color must be provided as a six-character hexadecimal number, for example, FFD700. If no color is specified, the default text color is black (000000).
+        /// Returns a new route given another route object
         /// </summary>
-        [FieldName("route_text_color")]
-        public int? TextColor { get; set; }
-
-        /// <summary>
-        /// Serves as a hash function.
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode()
+        public static Route From(Route route)
         {
-            unchecked
+            return new Route()
             {
-                int hash = 41;
-                hash = hash * 43 + (this.AgencyId ?? string.Empty).GetHashCode();
-                hash = hash * 43 + this.Color.GetHashCode();
-                hash = hash * 43 + (this.Description ?? string.Empty).GetHashCode();
-                hash = hash * 43 + (this.Id ?? string.Empty).GetHashCode();
-                hash = hash * 43 + (this.LongName ?? string.Empty).GetHashCode();
-                hash = hash * 43 + (this.ShortName ?? string.Empty).GetHashCode();
-                hash = hash * 43 + (this.TextColor ?? -1).GetHashCode();
-                hash = hash * 43 + this.Type.GetHashCode();
-                hash = hash * 43 + (this.Url ?? string.Empty).GetHashCode();
-                return hash;
-            }
+                AgencyId = route.AgencyId,
+                Color = route.Color,
+                Description = route.Description,
+                Id = route.Id,
+                LongName = route.LongName,
+                ShortName = route.ShortName,
+                Tag = route.Tag,
+                TextColor = route.TextColor,
+                Type = route.Type,
+                Url = route.Url
+            };
         }
 
         /// <summary>
@@ -135,6 +153,28 @@ namespace GTFS.Entities
         }
 
         /// <summary>
+        /// Serves as a hash function.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 41;
+                hash = hash * 43 + (this.AgencyId ?? string.Empty).GetHashCode();
+                hash = hash * 43 + this.Color.GetHashCode();
+                hash = hash * 43 + (this.Description ?? string.Empty).GetHashCode();
+                hash = hash * 43 + (this.Id ?? string.Empty).GetHashCode();
+                hash = hash * 43 + (this.LongName ?? string.Empty).GetHashCode();
+                hash = hash * 43 + (this.ShortName ?? string.Empty).GetHashCode();
+                hash = hash * 43 + (this.TextColor ?? -1).GetHashCode();
+                hash = hash * 43 + this.Type.GetHashCode();
+                hash = hash * 43 + (this.Url ?? string.Empty).GetHashCode();
+                return hash;
+            }
+        }
+
+        /// <summary>
         /// Returns a description of this route.
         /// </summary>
         /// <returns></returns>
@@ -154,24 +194,6 @@ namespace GTFS.Entities
             }
         }
 
-        /// <summary>
-        /// Returns a new route given another route object
-        /// </summary>
-        public static Route From(Route route)
-        {
-            return new Route()
-            {
-                AgencyId = route.AgencyId,
-                Color = route.Color,
-                Description = route.Description,
-                Id = route.Id,
-                LongName = route.LongName,
-                ShortName = route.ShortName,
-                Tag = route.Tag,
-                TextColor = route.TextColor,
-                Type = route.Type,
-                Url = route.Url
-            };
-        }
+        #endregion Public Methods
     }
 }

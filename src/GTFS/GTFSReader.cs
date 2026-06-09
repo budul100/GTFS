@@ -1406,6 +1406,14 @@ namespace GTFS
                 case "route_text_color":
                     route.TextColor = this.ParseFieldColor(header.Name, fieldName, value);
                     break;
+
+                case "continuous_pickup":
+                    route.ContinuousPickup = this.ParseFieldContinuousPickupDropOff(header.Name, fieldName, value);
+                    break;
+
+                case "continuous_drop_off":
+                    route.ContinuousDropOff = this.ParseFieldContinuousPickupDropOff(header.Name, fieldName, value);
+                    break;
             }
         }
 
@@ -1662,6 +1670,14 @@ namespace GTFS
 
                 case "timepoint":
                     stopTime.TimepointType = this.ParseFieldTimepointType(header.Name, fieldName, value);
+                    break;
+
+                case "continuous_pickup":
+                    stopTime.ContinuousPickup = this.ParseFieldContinuousPickupDropOff(header.Name, fieldName, value);
+                    break;
+
+                case "continuous_drop_off":
+                    stopTime.ContinuousDropOff = this.ParseFieldContinuousPickupDropOff(header.Name, fieldName, value);
                     break;
             }
         }
@@ -1968,6 +1984,23 @@ namespace GTFS
                 "0" => false,
                 "1" => (bool?)true,
                 _ => throw new GTFSParseException(name, fieldName, value),
+            };
+        }
+
+        private ContinuousPickupDropOff? ParseFieldContinuousPickupDropOff(string name, string fieldName, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            value = this.CleanFieldValue(value);
+
+            return value switch
+            {
+                "0" => ContinuousPickupDropOff.Continuous,
+                "1" => ContinuousPickupDropOff.NoContinuous,
+                "2" => ContinuousPickupDropOff.PhoneAgency,
+                "3" => ContinuousPickupDropOff.CoordinateWithDriver,
+                _ => throw new GTFSParseException(name, fieldName, value)
             };
         }
 

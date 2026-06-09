@@ -516,6 +516,8 @@ namespace GTFS
                         data[6] = "route_url";
                         data[7] = "route_color";
                         data[8] = "route_text_color";
+                        data[9] = "continuous_pickup";
+                        data[10] = "continuous_drop_off";
                         file.Write(data);
                         initialized = true;
                     }
@@ -530,6 +532,8 @@ namespace GTFS
                     data[6] = this.WriteFieldString("routes", "route_url", entity.Url);
                     data[7] = this.WriteFieldColor("routes", "route_color", entity.Color);
                     data[8] = this.WriteFieldColor("routes", "route_text_color", entity.TextColor);
+                    data[9] = this.WriteFieldContinuousPickupDropOff("routes", "continuous_pickup", entity.ContinuousPickup);
+                    data[10] = this.WriteFieldContinuousPickupDropOff("routes", "continuous_drop_off", entity.ContinuousDropOff);
                     file.Write(data);
                 }
                 file.Close();
@@ -669,6 +673,8 @@ namespace GTFS
                         data[7] = "drop_off_type";
                         data[8] = "shape_dist_traveled";
                         data[9] = "timepoint";
+                        data[9] = "continuous_pickup";
+                        data[10] = "continuous_drop_off";
                         file.Write(data);
                         initialized = true;
                     }
@@ -684,6 +690,8 @@ namespace GTFS
                     data[7] = this.WriteFieldDropOffType("stop_times", "drop_off_type", entity.DropOffType);
                     data[8] = this.WriteFieldDouble("stop_times", "shape_dist_traveled", entity.ShapeDistTravelled);
                     data[9] = this.WriteFieldTimepointType("stop_times", "timepoint", entity.TimepointType);
+                    data[9] = this.WriteFieldContinuousPickupDropOff("stop_times", "continuous_pickup", entity.ContinuousPickup);
+                    data[10] = this.WriteFieldContinuousPickupDropOff("stop_times", "continuous_drop_off", entity.ContinuousDropOff);
                     file.Write(data);
                 }
                 file.Close();
@@ -840,6 +848,21 @@ namespace GTFS
         protected string WriteFieldColor(string name, string fieldName, int? value)
         {
             return value.ToHexColorString();
+        }
+
+        protected virtual string WriteFieldContinuousPickupDropOff(string name, string fieldName, ContinuousPickupDropOff? value)
+        {
+            if (value is null)
+                return string.Empty;
+
+            return value switch
+            {
+                ContinuousPickupDropOff.Continuous => "0",
+                ContinuousPickupDropOff.NoContinuous => "1",
+                ContinuousPickupDropOff.PhoneAgency => "2",
+                ContinuousPickupDropOff.CoordinateWithDriver => "3",
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            };
         }
 
         /// <summary>
