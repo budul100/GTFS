@@ -1,35 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-
-    <IsPackable>false</IsPackable>
-
-    <ApplicationIcon />
-
-    <OutputType>Exe</OutputType>
-    <PackageId>GTFS.Test.Functional</PackageId>
-    <StartupObject />
-  </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\GTFS\GTFS.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Osm\profiles\*.lua">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="gtfs1.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="gtfs1.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-  </ItemGroup>
-
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+		<OutputType>Exe</OutputType>
+		<PackageId>GTFS.Test.Functional</PackageId>
+		<StartupObject/>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\GTFS\GTFS.csproj"/>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<None Update="Osm\profiles\*.lua">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="gtfs1.zip">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Compile Update="gtfs1.zip">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Compile>
+	</ItemGroup>
 
 </Project>
