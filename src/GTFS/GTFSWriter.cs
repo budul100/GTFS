@@ -1183,6 +1183,8 @@ namespace GTFS
                 TransferType.TimedTransfer => "1",
                 TransferType.MinimumTime => "2",
                 TransferType.NotPossible => "3",
+                TransferType.InSeat => "4",
+                TransferType.InSeatNotAllowed => "5",
                 _ => string.Empty,
             };
         }

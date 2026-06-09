@@ -42,6 +42,14 @@ namespace GTFS.Entities.Enumerations
         /// <summary>
         /// 3: Transfers are not possible between routes at this location.
         /// </summary>
-        NotPossible
+        NotPossible,
+        /// <summary>
+        /// In-seat transfer. Passengers may stay on board; no need to reboard.
+        /// </summary>
+        InSeat = 4,
+        /// <summary>
+        /// In-seat transfer not allowed. Passengers must alight and reboard even if vehicle stays.
+        /// </summary>
+        InSeatNotAllowed = 5
     }
 }

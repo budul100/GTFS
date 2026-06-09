@@ -1095,6 +1095,8 @@ namespace GTFS
                 "1" => TransferType.TimedTransfer,
                 "2" => TransferType.MinimumTime,
                 "3" => TransferType.NotPossible,
+                "4" => TransferType.InSeat,
+                "5" => TransferType.InSeatNotAllowed,
                 _ => throw new GTFSParseException(name, fieldName, value),
             };
         }
