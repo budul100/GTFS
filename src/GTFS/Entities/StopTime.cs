@@ -30,7 +30,7 @@ namespace GTFS.Entities
     /// Represents a stop time. Times that a vehicle arrives at and departs from individual stops for each trip.
     /// </summary>
     [FileName("stop_times")]
-    public class StopTime : GTFSEntity, IComparable
+    public class StopTime : GTFSEntity, IComparable, IComparable<StopTime>
     {
         #region Public Properties
 
@@ -147,12 +147,25 @@ namespace GTFS.Entities
         /// <returns></returns>
         public int CompareTo(object obj)
         {
-            var other = (obj as StopTime);
-            if (this.TripId.Equals(other.TripId))
-            { // trip id's equal compare stop sequence.
-                return this.StopSequence.CompareTo(other.StopSequence);
-            }
-            return this.TripId.CompareTo(other.TripId);
+            if (obj is not StopTime other)
+                throw new ArgumentException($"Object must be of type {nameof(StopTime)}.", nameof(obj));
+
+            return CompareTo(other);
+        }
+
+        public int CompareTo(StopTime other)
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+
+            var tripCompare = string.Compare(
+                this.TripId ?? string.Empty,
+                other.TripId ?? string.Empty,
+                StringComparison.Ordinal);
+
+            return tripCompare != 0
+                ? tripCompare
+                : this.StopSequence.CompareTo(other.StopSequence);
         }
 
         /// <summary>
