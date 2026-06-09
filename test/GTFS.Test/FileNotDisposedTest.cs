@@ -60,13 +60,13 @@ namespace GTFS.Test
             var agencyFile = Path.Combine(directoryInfo.FullName, "agency.txt");
 
             Assert.Throws<IOException>(
-                () =>
+                new TestDelegate(() =>
                 {
                     using (File.OpenWrite(agencyFile))
                     {
                         // do nothing
                     }
-                },
+                }),
                 "The process cannot access the file '{0}' because it is being used by another process.",
                 agencyFile);
         }

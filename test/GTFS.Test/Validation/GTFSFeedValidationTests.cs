@@ -48,7 +48,7 @@ namespace GTFS.Test.Validation
             var feed = reader.Read(source);
 
             // validate.
-            Assert.IsTrue(GTFSFeedValidation.Validate(feed));
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.True);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace GTFS.Test.Validation
             feed.Agencies.Remove("DTA");
 
             // validate.
-            Assert.IsFalse(GTFSFeedValidation.Validate(feed));
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
         }
 
         /// <summary>
@@ -86,12 +86,12 @@ namespace GTFS.Test.Validation
 
             // change to an unknown agency.
             const string UnknownAgency = "unknown agency";
-            Assert.IsTrue(feed.Agencies.All(x => x.Id != UnknownAgency));
-            Assert.IsTrue(feed.Routes.Any());
+            Assert.That(feed.Agencies.All(x => x.Id != UnknownAgency), Is.True);
+            Assert.That(feed.Routes.Any(), Is.True);
             feed.Routes.First().AgencyId = UnknownAgency;
             
             // validate.
-            Assert.IsFalse(GTFSFeedValidation.Validate(feed));
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
         }
 
         /// <summary>
@@ -108,11 +108,11 @@ namespace GTFS.Test.Validation
             var feed = reader.Read(source);
 
             // remove agency link.
-            Assert.IsTrue(feed.Routes.Any());
+            Assert.That(feed.Routes.Any(), Is.True);
             feed.Routes.First().AgencyId = null;
 
             // validate.
-            Assert.IsTrue(GTFSFeedValidation.Validate(feed));
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.True);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace GTFS.Test.Validation
             feed.Stops.Remove("BULLFROG");
 
             // validate.
-            Assert.IsFalse(GTFSFeedValidation.Validate(feed));
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace GTFS.Test.Validation
             feed.Routes.Remove("AB");
 
             // validate.
-            Assert.IsFalse(GTFSFeedValidation.Validate(feed));
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace GTFS.Test.Validation
             feed.Trips.Remove("AB1");
 
             // validate.
-            Assert.IsFalse(GTFSFeedValidation.Validate(feed));
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace GTFS.Test.Validation
             (feed.StopTimes.Get() as List<StopTime>)[2].StopSequence = 1024;
 
             // validate.
-            Assert.IsFalse(GTFSFeedValidation.Validate(feed));
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
         }
     }
 }

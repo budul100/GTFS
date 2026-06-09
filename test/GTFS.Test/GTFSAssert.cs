@@ -119,11 +119,11 @@ namespace GTFS.Test
         public static void AreEqual<T>(IEnumerable<T> actuals, IEnumerable<T> expectees, 
             Func<T, T, bool> idEqual, Action<T, T> areEqualAction)
         {
-            Assert.AreEqual(actuals.Count(), expectees.Count());
+            Assert.That(actuals.Count(), Is.EqualTo(expectees.Count()));
             foreach(var actual in actuals)
             {
                 var expected = expectees.First(x => idEqual(x, actual));
-                Assert.IsNotNull(expected);
+                Assert.That(expected, Is.Not.Null);
                 areEqualAction(actual, expected);
             }
         }
@@ -137,15 +137,15 @@ namespace GTFS.Test
         {
             if(actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.EndDate, expected.EndDate);
-            Assert.AreEqual(actual.Lang, expected.Lang);
-            Assert.AreEqual(actual.PublisherName, expected.PublisherName);
-            Assert.AreEqual(actual.PublisherUrl, expected.PublisherUrl);
-            Assert.AreEqual(actual.StartDate, expected.StartDate);
-            Assert.AreEqual(actual.Version, expected.Version);
+            Assert.That(actual.EndDate, Is.EqualTo(expected.EndDate));
+            Assert.That(actual.Lang, Is.EqualTo(expected.Lang));
+            Assert.That(actual.PublisherName, Is.EqualTo(expected.PublisherName));
+            Assert.That(actual.PublisherUrl, Is.EqualTo(expected.PublisherUrl));
+            Assert.That(actual.StartDate, Is.EqualTo(expected.StartDate));
+            Assert.That(actual.Version, Is.EqualTo(expected.Version));
         }
 
         /// <summary>
@@ -157,17 +157,17 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.Email, expected.Email);
-            Assert.AreEqual(actual.FareURL, expected.FareURL);
-            Assert.AreEqual(actual.Id, expected.Id);
-            Assert.AreEqual(actual.LanguageCode, expected.LanguageCode);
-            Assert.AreEqual(actual.Name, expected.Name);
-            Assert.AreEqual(actual.Phone, expected.Phone);
-            Assert.AreEqual(actual.Timezone, expected.Timezone);
-            Assert.AreEqual(actual.URL, expected.URL);
+            Assert.That(actual.Email, Is.EqualTo(expected.Email));
+            Assert.That(actual.FareURL, Is.EqualTo(expected.FareURL));
+            Assert.That(actual.Id, Is.EqualTo(expected.Id));
+            Assert.That(actual.LanguageCode, Is.EqualTo(expected.LanguageCode));
+            Assert.That(actual.Name, Is.EqualTo(expected.Name));
+            Assert.That(actual.Phone, Is.EqualTo(expected.Phone));
+            Assert.That(actual.Timezone, Is.EqualTo(expected.Timezone));
+            Assert.That(actual.URL, Is.EqualTo(expected.URL));
         }
 
         /// <summary>
@@ -179,19 +179,19 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.EndDate, expected.EndDate);
-            Assert.AreEqual(actual.Friday, expected.Friday);
-            Assert.AreEqual(actual.Monday, expected.Monday);
-            Assert.AreEqual(actual.Saturday, expected.Saturday);
-            Assert.AreEqual(actual.ServiceId, expected.ServiceId);
-            Assert.AreEqual(actual.StartDate, expected.StartDate);
-            Assert.AreEqual(actual.Sunday, expected.Sunday);
-            Assert.AreEqual(actual.Thursday, expected.Thursday);
-            Assert.AreEqual(actual.Tuesday, expected.Tuesday);
-            Assert.AreEqual(actual.Wednesday, expected.Wednesday);
+            Assert.That(actual.EndDate, Is.EqualTo(expected.EndDate));
+            Assert.That(actual.Friday, Is.EqualTo(expected.Friday));
+            Assert.That(actual.Monday, Is.EqualTo(expected.Monday));
+            Assert.That(actual.Saturday, Is.EqualTo(expected.Saturday));
+            Assert.That(actual.ServiceId, Is.EqualTo(expected.ServiceId));
+            Assert.That(actual.StartDate, Is.EqualTo(expected.StartDate));
+            Assert.That(actual.Sunday, Is.EqualTo(expected.Sunday));
+            Assert.That(actual.Thursday, Is.EqualTo(expected.Thursday));
+            Assert.That(actual.Tuesday, Is.EqualTo(expected.Tuesday));
+            Assert.That(actual.Wednesday, Is.EqualTo(expected.Wednesday));
         }
 
         /// <summary>
@@ -203,12 +203,12 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.Date, expected.Date);
-            Assert.AreEqual(actual.ExceptionType, expected.ExceptionType);
-            Assert.AreEqual(actual.ServiceId, expected.ServiceId);
+            Assert.That(actual.Date, Is.EqualTo(expected.Date));
+            Assert.That(actual.ExceptionType, Is.EqualTo(expected.ExceptionType));
+            Assert.That(actual.ServiceId, Is.EqualTo(expected.ServiceId));
         }
 
         /// <summary>
@@ -221,15 +221,15 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.CurrencyType, expected.CurrencyType);
-            Assert.AreEqual(actual.FareId, expected.FareId);
-            Assert.AreEqual(actual.PaymentMethod, expected.PaymentMethod);
-            Assert.AreEqual(actual.Price, expected.Price);
-            Assert.AreEqual(actual.TransferDuration, expected.TransferDuration);
-            Assert.AreEqual(actual.Transfers, expected.Transfers);
+            Assert.That(actual.CurrencyType, Is.EqualTo(expected.CurrencyType));
+            Assert.That(actual.FareId, Is.EqualTo(expected.FareId));
+            Assert.That(actual.PaymentMethod, Is.EqualTo(expected.PaymentMethod));
+            Assert.That(actual.Price, Is.EqualTo(expected.Price));
+            Assert.That(actual.TransferDuration, Is.EqualTo(expected.TransferDuration));
+            Assert.That(actual.Transfers, Is.EqualTo(expected.Transfers));
         }
 
         /// <summary>
@@ -241,14 +241,14 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.ContainsId, expected.ContainsId);
-            Assert.AreEqual(actual.DestinationId, expected.DestinationId);
-            Assert.AreEqual(actual.FareId, expected.FareId);
-            Assert.AreEqual(actual.OriginId, expected.OriginId);
-            Assert.AreEqual(actual.RouteId, expected.RouteId);
+            Assert.That(actual.ContainsId, Is.EqualTo(expected.ContainsId));
+            Assert.That(actual.DestinationId, Is.EqualTo(expected.DestinationId));
+            Assert.That(actual.FareId, Is.EqualTo(expected.FareId));
+            Assert.That(actual.OriginId, Is.EqualTo(expected.OriginId));
+            Assert.That(actual.RouteId, Is.EqualTo(expected.RouteId));
         }
 
         /// <summary>
@@ -260,14 +260,14 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.EndTime, expected.EndTime);
-            Assert.AreEqual(actual.ExactTimes, expected.ExactTimes);
-            Assert.AreEqual(actual.HeadwaySecs, expected.HeadwaySecs);
-            Assert.AreEqual(actual.StartTime, expected.StartTime);
-            Assert.AreEqual(actual.TripId, expected.TripId);
+            Assert.That(actual.EndTime, Is.EqualTo(expected.EndTime));
+            Assert.That(actual.ExactTimes, Is.EqualTo(expected.ExactTimes));
+            Assert.That(actual.HeadwaySecs, Is.EqualTo(expected.HeadwaySecs));
+            Assert.That(actual.StartTime, Is.EqualTo(expected.StartTime));
+            Assert.That(actual.TripId, Is.EqualTo(expected.TripId));
         }
 
         /// <summary>
@@ -279,18 +279,18 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.AgencyId, expected.AgencyId);
-            Assert.AreEqual(actual.Color, expected.Color);
-            Assert.AreEqual(actual.Description, expected.Description);
-            Assert.AreEqual(actual.Id, expected.Id);
-            Assert.AreEqual(actual.LongName, expected.LongName);
-            Assert.AreEqual(actual.ShortName, expected.ShortName);
-            Assert.AreEqual(actual.TextColor, expected.TextColor);
-            Assert.AreEqual(actual.Type, expected.Type);
-            Assert.AreEqual(actual.Url, expected.Url);
+            Assert.That(actual.AgencyId, Is.EqualTo(expected.AgencyId));
+            Assert.That(actual.Color, Is.EqualTo(expected.Color));
+            Assert.That(actual.Description, Is.EqualTo(expected.Description));
+            Assert.That(actual.Id, Is.EqualTo(expected.Id));
+            Assert.That(actual.LongName, Is.EqualTo(expected.LongName));
+            Assert.That(actual.ShortName, Is.EqualTo(expected.ShortName));
+            Assert.That(actual.TextColor, Is.EqualTo(expected.TextColor));
+            Assert.That(actual.Type, Is.EqualTo(expected.Type));
+            Assert.That(actual.Url, Is.EqualTo(expected.Url));
         }
 
         /// <summary>
@@ -302,14 +302,14 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.DistanceTravelled, expected.DistanceTravelled);
-            Assert.AreEqual(actual.Id, expected.Id);
-            Assert.AreEqual(actual.Latitude, expected.Latitude);
-            Assert.AreEqual(actual.Longitude, expected.Longitude);
-            Assert.AreEqual(actual.Sequence, expected.Sequence);
+            Assert.That(actual.DistanceTravelled, Is.EqualTo(expected.DistanceTravelled));
+            Assert.That(actual.Id, Is.EqualTo(expected.Id));
+            Assert.That(actual.Latitude, Is.EqualTo(expected.Latitude));
+            Assert.That(actual.Longitude, Is.EqualTo(expected.Longitude));
+            Assert.That(actual.Sequence, Is.EqualTo(expected.Sequence));
         }
 
         /// <summary>
@@ -321,21 +321,21 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.Code, expected.Code);
-            Assert.AreEqual(actual.Description, expected.Description);
-            Assert.AreEqual(actual.Id, expected.Id);
-            Assert.AreEqual(actual.Latitude, expected.Latitude);
-            Assert.AreEqual(actual.LocationType, expected.LocationType);
-            Assert.AreEqual(actual.Longitude, expected.Longitude);
-            Assert.AreEqual(actual.Name, expected.Name);
-            Assert.AreEqual(actual.ParentStation, expected.ParentStation);
-            Assert.AreEqual(actual.Timezone, expected.Timezone);
-            Assert.AreEqual(actual.Url, expected.Url);
-            Assert.AreEqual(actual.WheelchairBoarding, expected.WheelchairBoarding);
-            Assert.AreEqual(actual.Zone, expected.Zone);
+            Assert.That(actual.Code, Is.EqualTo(expected.Code));
+            Assert.That(actual.Description, Is.EqualTo(expected.Description));
+            Assert.That(actual.Id, Is.EqualTo(expected.Id));
+            Assert.That(actual.Latitude, Is.EqualTo(expected.Latitude));
+            Assert.That(actual.LocationType, Is.EqualTo(expected.LocationType));
+            Assert.That(actual.Longitude, Is.EqualTo(expected.Longitude));
+            Assert.That(actual.Name, Is.EqualTo(expected.Name));
+            Assert.That(actual.ParentStation, Is.EqualTo(expected.ParentStation));
+            Assert.That(actual.Timezone, Is.EqualTo(expected.Timezone));
+            Assert.That(actual.Url, Is.EqualTo(expected.Url));
+            Assert.That(actual.WheelchairBoarding, Is.EqualTo(expected.WheelchairBoarding));
+            Assert.That(actual.Zone, Is.EqualTo(expected.Zone));
         }
 
         /// <summary>
@@ -345,19 +345,19 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.ArrivalTime, expected.ArrivalTime);
-            Assert.AreEqual(actual.DepartureTime, expected.DepartureTime);
-            Assert.AreEqual(actual.DropOffType, expected.DropOffType);
-            Assert.AreEqual(actual.PickupType, expected.PickupType);
-            Assert.AreEqual(actual.ShapeDistTravelled, expected.ShapeDistTravelled);
-            Assert.AreEqual(actual.StopHeadsign, expected.StopHeadsign);
-            Assert.AreEqual(actual.StopId, expected.StopId);
-            Assert.AreEqual(actual.StopSequence, expected.StopSequence);
-            Assert.AreEqual(actual.TripId, expected.TripId);
-            Assert.AreEqual(actual.TimepointType, expected.TimepointType);
+            Assert.That(actual.ArrivalTime, Is.EqualTo(expected.ArrivalTime));
+            Assert.That(actual.DepartureTime, Is.EqualTo(expected.DepartureTime));
+            Assert.That(actual.DropOffType, Is.EqualTo(expected.DropOffType));
+            Assert.That(actual.PickupType, Is.EqualTo(expected.PickupType));
+            Assert.That(actual.ShapeDistTravelled, Is.EqualTo(expected.ShapeDistTravelled));
+            Assert.That(actual.StopHeadsign, Is.EqualTo(expected.StopHeadsign));
+            Assert.That(actual.StopId, Is.EqualTo(expected.StopId));
+            Assert.That(actual.StopSequence, Is.EqualTo(expected.StopSequence));
+            Assert.That(actual.TripId, Is.EqualTo(expected.TripId));
+            Assert.That(actual.TimepointType, Is.EqualTo(expected.TimepointType));
         }
 
         /// <summary>
@@ -369,13 +369,13 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.FromStopId, expected.FromStopId);
-            Assert.AreEqual(actual.MinimumTransferTime, expected.MinimumTransferTime);
-            Assert.AreEqual(actual.ToStopId, expected.ToStopId);
-            Assert.AreEqual(actual.TransferType, expected.TransferType);
+            Assert.That(actual.FromStopId, Is.EqualTo(expected.FromStopId));
+            Assert.That(actual.MinimumTransferTime, Is.EqualTo(expected.MinimumTransferTime));
+            Assert.That(actual.ToStopId, Is.EqualTo(expected.ToStopId));
+            Assert.That(actual.TransferType, Is.EqualTo(expected.TransferType));
         }
 
         /// <summary>
@@ -387,18 +387,18 @@ namespace GTFS.Test
         {
             if (actual == null)
             {
-                Assert.IsNull(expected);
+                Assert.That(expected, Is.Null);
                 return;
             }
-            Assert.AreEqual(actual.AccessibilityType, expected.AccessibilityType);
-            Assert.AreEqual(actual.BlockId, expected.BlockId);
-            Assert.AreEqual(actual.Direction, expected.Direction);
-            Assert.AreEqual(actual.Headsign, expected.Headsign);
-            Assert.AreEqual(actual.Id, expected.Id);
-            Assert.AreEqual(actual.RouteId, expected.RouteId);
-            Assert.AreEqual(actual.ServiceId, expected.ServiceId);
-            Assert.AreEqual(actual.ShapeId, expected.ShapeId);
-            Assert.AreEqual(actual.ShortName, expected.ShortName);
+            Assert.That(actual.AccessibilityType, Is.EqualTo(expected.AccessibilityType));
+            Assert.That(actual.BlockId, Is.EqualTo(expected.BlockId));
+            Assert.That(actual.Direction, Is.EqualTo(expected.Direction));
+            Assert.That(actual.Headsign, Is.EqualTo(expected.Headsign));
+            Assert.That(actual.Id, Is.EqualTo(expected.Id));
+            Assert.That(actual.RouteId, Is.EqualTo(expected.RouteId));
+            Assert.That(actual.ServiceId, Is.EqualTo(expected.ServiceId));
+            Assert.That(actual.ShapeId, Is.EqualTo(expected.ShapeId));
+            Assert.That(actual.ShortName, Is.EqualTo(expected.ShortName));
         }
     }
 }

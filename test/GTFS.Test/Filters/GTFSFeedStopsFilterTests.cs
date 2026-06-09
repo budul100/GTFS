@@ -54,7 +54,7 @@ namespace GTFS.Test.Filters
 
             // execute filter.
             var filtered = filter.Filter(feed);
-            Assert.IsTrue(GTFSFeedValidation.Validate(filtered));
+            Assert.That(GTFSFeedValidation.Validate(filtered), Is.True);
             GTFSAssert.AreEqual(feed, filtered);
         }
 
@@ -85,24 +85,24 @@ namespace GTFS.Test.Filters
 
             // execute filter.
             var filtered = filter.Filter(feed);
-            Assert.IsTrue(GTFSFeedValidation.Validate(filtered));
+            Assert.That(GTFSFeedValidation.Validate(filtered), Is.True);
 
             // test for trips/stops.
             foreach (var stop in filtered.Stops)
             {
-                Assert.Contains(stop.Id, expectedStopIds);
+                Assert.That(expectedStopIds, Does.Contain(stop.Id));
             }
-            foreach(var trip in filtered.Trips)
+            foreach (var trip in filtered.Trips)
             {
-                Assert.Contains(trip.Id, expectedTripIds);
+                Assert.That(expectedTripIds, Does.Contain(trip.Id));
             }
             foreach (var route in filtered.Routes)
             {
-                Assert.Contains(route.Id, expectedRouteIds);
+                Assert.That(expectedRouteIds, Does.Contain(route.Id));
             }
             foreach (var shape in filtered.Shapes)
             {
-                Assert.Contains(shape.Id, expectedShapeIds);
+                Assert.That(expectedShapeIds, Does.Contain(shape.Id));
             }
 
             // create the filter.
@@ -112,24 +112,24 @@ namespace GTFS.Test.Filters
 
             // execute filter.
             filtered = filter.Filter(feed);
-            Assert.IsTrue(GTFSFeedValidation.Validate(filtered));
+            Assert.That(GTFSFeedValidation.Validate(filtered), Is.True);
 
             // test for trips/stops.
             foreach (var stop in filtered.Stops)
             {
-                Assert.Contains(stop.Id, expectedStopIds);
+                Assert.That(expectedStopIds, Does.Contain(stop.Id));
             }
             foreach (var trip in filtered.Trips)
             {
-                Assert.Contains(trip.Id, expectedTripIds);
+                Assert.That(expectedTripIds, Does.Contain(trip.Id));
             }
             foreach (var route in filtered.Routes)
             {
-                Assert.Contains(route.Id, expectedRouteIds);
+                Assert.That(expectedRouteIds, Does.Contain(route.Id));
             }
             foreach (var shape in filtered.Shapes)
             {
-                Assert.Contains(shape.Id, expectedShapeIds);
+                Assert.That(expectedShapeIds, Does.Contain(shape.Id));
             }
         }
     }

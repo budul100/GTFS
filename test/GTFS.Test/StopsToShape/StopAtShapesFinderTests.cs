@@ -54,16 +54,16 @@ namespace GTFS.Test.StopsToShape
             var stopAtShapes = finder.Find(feed, "AB1");
 
             // validate/test.
-            Assert.IsNotNull(stopAtShapes);
-            Assert.AreEqual(2, stopAtShapes.Count);
-            Assert.AreEqual("BEATTY_AIRPORT", stopAtShapes[0].StopId);
-            Assert.AreEqual(1, stopAtShapes[0].ShapePointSequence);
-            Assert.AreEqual(0, stopAtShapes[0].StopOffset);
-            Assert.AreEqual("AB1", stopAtShapes[0].TripId);
-            Assert.AreEqual("BULLFROG", stopAtShapes[1].StopId);
-            Assert.AreEqual(4, stopAtShapes[1].ShapePointSequence);
-            Assert.AreEqual(0, stopAtShapes[1].StopOffset);
-            Assert.AreEqual("AB1", stopAtShapes[1].TripId);
+            Assert.That(stopAtShapes, Is.Not.Null);
+            Assert.That(stopAtShapes.Count, Is.EqualTo(2));
+            Assert.That(stopAtShapes[0].StopId, Is.EqualTo("BEATTY_AIRPORT"));
+            Assert.That(stopAtShapes[0].ShapePointSequence, Is.EqualTo(1));
+            Assert.That(stopAtShapes[0].StopOffset, Is.EqualTo(0));
+            Assert.That(stopAtShapes[0].TripId, Is.EqualTo("AB1"));
+            Assert.That(stopAtShapes[1].StopId, Is.EqualTo("BULLFROG"));
+            Assert.That(stopAtShapes[1].ShapePointSequence, Is.EqualTo(4));
+            Assert.That(stopAtShapes[1].StopOffset, Is.EqualTo(0));
+            Assert.That(stopAtShapes[1].TripId, Is.EqualTo("AB1"));
         }
     }
 }

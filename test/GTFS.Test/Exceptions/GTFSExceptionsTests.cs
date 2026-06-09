@@ -49,7 +49,7 @@ namespace GTFS.Test.Exceptions
                 .ToArray();
 
             // test result.
-            Assert.IsTrue(customExceptions.All(x => baseException.IsAssignableFrom(x)));
+            Assert.That(customExceptions.All(x => baseException.IsAssignableFrom(x)), Is.True);
         }
     }
 }

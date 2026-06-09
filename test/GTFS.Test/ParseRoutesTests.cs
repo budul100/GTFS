@@ -56,9 +56,9 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("routes")));
 
             // test result.
-            Assert.IsNotNull(feed.Routes);
+            Assert.That(feed.Routes, Is.Not.Null);
             var routes = feed.Routes.ToList();
-            Assert.IsTrue(routes.All(x => x.Description == string.Empty));
+            Assert.That(routes.All(x => x.Description == string.Empty), Is.True);
         }
         
         /// <summary>
@@ -82,9 +82,9 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("routes")));
 
             // test result.
-            Assert.IsNotNull(feed.Routes);
+            Assert.That(feed.Routes, Is.Not.Null);
             var routes = feed.Routes.ToList();
-            Assert.IsTrue(routes.All(x => x.Description == null));
+            Assert.That(routes.All(x => x.Description == null), Is.True);
         }
     }
 }

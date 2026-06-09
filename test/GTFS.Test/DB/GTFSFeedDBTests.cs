@@ -116,7 +116,7 @@ namespace GTFS.Test.DB
 
             // get feed.
             feed = db.GetFeed(feedId);
-            Assert.IsNull(feed);
+            Assert.That(feed, Is.Null);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace GTFS.Test.DB
 
             // get feed.
             feed = db.GetFeed(feedId);
-            Assert.IsNull(feed);
+            Assert.That(feed, Is.Null);
         }
     }
 }

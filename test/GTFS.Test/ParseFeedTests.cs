@@ -53,7 +53,7 @@ namespace GTFS.Test
             };
 
             var feed = reader.Read(source);
-            Assert.IsNotNull(feed);
+            Assert.That(feed, Is.Not.Null);
         }
 
         /// <summary>
@@ -72,7 +72,9 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"),"calendar")
             };
 
-            Assert.Throws<GTFSRequiredFileMissingException>(() => { reader.Read(source); }, GTFSRequiredFileMissingException.MessageFormat, "stop_times");
+            Assert.Throws<GTFSRequiredFileMissingException>(
+                new TestDelegate(() => { reader.Read(source); }),
+                GTFSRequiredFileMissingException.MessageFormat, "stop_times");
         }
 
         /// <summary>
@@ -93,7 +95,7 @@ namespace GTFS.Test
             };
 
             var feed = reader.Read(source);
-            Assert.IsNotNull(feed);
+            Assert.That(feed, Is.Not.Null);
         }
 
         /// <summary>
@@ -112,7 +114,9 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"),"stop_times"),
             };
 
-            Assert.Throws<GTFSRequiredFileSetMissingException>(() => { reader.Read(source); }, GTFSRequiredFileSetMissingException.MessageFormat, "calendar", "calendar_dates");
+            Assert.Throws<GTFSRequiredFileSetMissingException>(
+                new TestDelegate(() => { reader.Read(source); }),
+                GTFSRequiredFileSetMissingException.MessageFormat, "calendar", "calendar_dates");
         }
     }
 }

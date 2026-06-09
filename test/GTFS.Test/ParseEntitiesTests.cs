@@ -88,17 +88,17 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
 
             // test result.
-            Assert.IsNotNull(feed.Agencies);
+            Assert.That(feed.Agencies, Is.Not.Null);
             var agencies = new List<Agency>(feed.Agencies);
-            Assert.AreEqual(1, agencies.Count);
-            Assert.AreEqual(null, agencies[0].Email);
-            Assert.AreEqual(null, agencies[0].FareURL);
-            Assert.AreEqual("DTA", agencies[0].Id);
-            Assert.AreEqual(null, agencies[0].LanguageCode);
-            Assert.AreEqual("Demo Transit Authority", agencies[0].Name);
-            Assert.AreEqual(null, agencies[0].Phone);
-            Assert.AreEqual("America/Los_Angeles", agencies[0].Timezone);
-            Assert.AreEqual("http://google.com", agencies[0].URL);
+            Assert.That(agencies.Count, Is.EqualTo(1));
+            Assert.That(agencies[0].Email, Is.EqualTo(null));
+            Assert.That(agencies[0].FareURL, Is.EqualTo(null));
+            Assert.That(agencies[0].Id, Is.EqualTo("DTA"));
+            Assert.That(agencies[0].LanguageCode, Is.EqualTo(null));
+            Assert.That(agencies[0].Name, Is.EqualTo("Demo Transit Authority"));
+            Assert.That(agencies[0].Phone, Is.EqualTo(null));
+            Assert.That(agencies[0].Timezone, Is.EqualTo("America/Los_Angeles"));
+            Assert.That(agencies[0].URL, Is.EqualTo("http://google.com"));
         }
 
         /// <summary>
@@ -117,66 +117,66 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("routes")));
 
             // test result.
-            Assert.IsNotNull(feed.Routes);
+            Assert.That(feed.Routes, Is.Not.Null);
             var routes = feed.Routes.ToList();
-            Assert.AreEqual(5, routes.Count);
+            Assert.That(routes.Count, Is.EqualTo(5));
 
             //route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
 
             //AB,DTA,10,Airport - Bullfrog,,3,,,
             int idx = 0;
-            Assert.AreEqual("AB", routes[idx].Id);
-            Assert.AreEqual("DTA", routes[idx].AgencyId);
-            Assert.AreEqual("10", routes[idx].ShortName);
-            Assert.AreEqual("Airport - Bullfrog", routes[idx].LongName);
-            Assert.AreEqual(string.Empty, routes[idx].Description);
-            Assert.AreEqual(RouteTypeExtended.BusService, routes[idx].Type);
-            Assert.AreEqual(-3932017, routes[idx].Color);
-            Assert.AreEqual(null, routes[idx].TextColor);
+            Assert.That(routes[idx].Id, Is.EqualTo("AB"));
+            Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
+            Assert.That(routes[idx].ShortName, Is.EqualTo("10"));
+            Assert.That(routes[idx].LongName, Is.EqualTo("Airport - Bullfrog"));
+            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
+            Assert.That(routes[idx].Color, Is.EqualTo(-3932017));
+            Assert.That(routes[idx].TextColor, Is.EqualTo(null));
 
             //BFC,DTA,20,Bullfrog - Furnace Creek Resort,,3,,,
             idx = 1;
-            Assert.AreEqual("BFC", routes[idx].Id);
-            Assert.AreEqual("DTA", routes[idx].AgencyId);
-            Assert.AreEqual("20", routes[idx].ShortName);
-            Assert.AreEqual("Bullfrog - Furnace Creek Resort", routes[idx].LongName);
-            Assert.AreEqual(string.Empty, routes[idx].Description);
-            Assert.AreEqual(RouteTypeExtended.BusService, routes[idx].Type);
-            Assert.AreEqual(-1, routes[idx].Color);
-            Assert.AreEqual(null, routes[idx].TextColor);
+            Assert.That(routes[idx].Id, Is.EqualTo("BFC"));
+            Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
+            Assert.That(routes[idx].ShortName, Is.EqualTo("20"));
+            Assert.That(routes[idx].LongName, Is.EqualTo("Bullfrog - Furnace Creek Resort"));
+            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
+            Assert.That(routes[idx].Color, Is.EqualTo(-1));
+            Assert.That(routes[idx].TextColor, Is.EqualTo(null));
 
             //STBA,DTA,30,Stagecoach - Airport Shuttle,,3,,,
             idx = 2;
-            Assert.AreEqual("STBA", routes[idx].Id);
-            Assert.AreEqual("DTA", routes[idx].AgencyId);
-            Assert.AreEqual("30", routes[idx].ShortName);
-            Assert.AreEqual("Stagecoach - Airport Shuttle", routes[idx].LongName);
-            Assert.AreEqual(string.Empty, routes[idx].Description);
-            Assert.AreEqual(RouteTypeExtended.BusService, routes[idx].Type);
-            Assert.AreEqual(null, routes[idx].Color);
-            Assert.AreEqual(null, routes[idx].TextColor);
+            Assert.That(routes[idx].Id, Is.EqualTo("STBA"));
+            Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
+            Assert.That(routes[idx].ShortName, Is.EqualTo("30"));
+            Assert.That(routes[idx].LongName, Is.EqualTo("Stagecoach - Airport Shuttle"));
+            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
+            Assert.That(routes[idx].Color, Is.EqualTo(null));
+            Assert.That(routes[idx].TextColor, Is.EqualTo(null));
 
             //CITY,DTA,40,City,,3,,,
             idx = 3;
-            Assert.AreEqual("CITY", routes[idx].Id);
-            Assert.AreEqual("DTA", routes[idx].AgencyId);
-            Assert.AreEqual("40", routes[idx].ShortName);
-            Assert.AreEqual("City", routes[idx].LongName);
-            Assert.AreEqual(string.Empty, routes[idx].Description);
-            Assert.AreEqual(RouteTypeExtended.BusService, routes[idx].Type);
-            Assert.AreEqual(null, routes[idx].Color);
-            Assert.AreEqual(null, routes[idx].TextColor);
+            Assert.That(routes[idx].Id, Is.EqualTo("CITY"));
+            Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
+            Assert.That(routes[idx].ShortName, Is.EqualTo("40"));
+            Assert.That(routes[idx].LongName, Is.EqualTo("City"));
+            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
+            Assert.That(routes[idx].Color, Is.EqualTo(null));
+            Assert.That(routes[idx].TextColor, Is.EqualTo(null));
 
             //AAMV,DTA,50,Airport - Amargosa Valley,,3,,,
             idx = 4;
-            Assert.AreEqual("AAMV", routes[idx].Id);
-            Assert.AreEqual("DTA", routes[idx].AgencyId);
-            Assert.AreEqual("50", routes[idx].ShortName);
-            Assert.AreEqual("Airport - Amargosa Valley", routes[idx].LongName);
-            Assert.AreEqual(string.Empty, routes[idx].Description);
-            Assert.AreEqual(RouteTypeExtended.BusService, routes[idx].Type);
-            Assert.AreEqual(null, routes[idx].Color);
-            Assert.AreEqual(null, routes[idx].TextColor);
+            Assert.That(routes[idx].Id, Is.EqualTo("AAMV"));
+            Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
+            Assert.That(routes[idx].ShortName, Is.EqualTo("50"));
+            Assert.That(routes[idx].LongName, Is.EqualTo("Airport - Amargosa Valley"));
+            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
+            Assert.That(routes[idx].Color, Is.EqualTo(null));
+            Assert.That(routes[idx].TextColor, Is.EqualTo(null));
         }
 
         /// <summary>
@@ -195,26 +195,26 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("shapes")));
 
             // test result.
-            Assert.IsNotNull(feed.Shapes);
+            Assert.That(feed.Shapes, Is.Not.Null);
             var shapes = feed.Shapes.ToList();
-            Assert.AreEqual(44, shapes.Count);
+            Assert.That(shapes.Count, Is.EqualTo(44));
 
             // @ 1: shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
             // @ 2: shape_1,37.754211,-122.197868,1,
             int idx = 0;
-            Assert.AreEqual("shape_1", shapes[idx].Id);
-            Assert.AreEqual(37.754211, shapes[idx].Latitude);
-            Assert.AreEqual(-122.197868, shapes[idx].Longitude);
-            Assert.AreEqual(1, shapes[idx].Sequence);
-            Assert.AreEqual(null, shapes[idx].DistanceTravelled);
+            Assert.That(shapes[idx].Id, Is.EqualTo("shape_1"));
+            Assert.That(shapes[idx].Latitude, Is.EqualTo(37.754211));
+            Assert.That(shapes[idx].Longitude, Is.EqualTo(-122.197868));
+            Assert.That(shapes[idx].Sequence, Is.EqualTo(1));
+            Assert.That(shapes[idx].DistanceTravelled, Is.EqualTo(null));
 
             // @ 10: shape_3,37.73645,-122.19706,1,
             idx = 8;
-            Assert.AreEqual("shape_3", shapes[idx].Id);
-            Assert.AreEqual(37.73645, shapes[idx].Latitude);
-            Assert.AreEqual(-122.19706, shapes[idx].Longitude);
-            Assert.AreEqual(1, shapes[idx].Sequence);
-            Assert.AreEqual(null, shapes[idx].DistanceTravelled);
+            Assert.That(shapes[idx].Id, Is.EqualTo("shape_3"));
+            Assert.That(shapes[idx].Latitude, Is.EqualTo(37.73645));
+            Assert.That(shapes[idx].Longitude, Is.EqualTo(-122.19706));
+            Assert.That(shapes[idx].Sequence, Is.EqualTo(1));
+            Assert.That(shapes[idx].DistanceTravelled, Is.EqualTo(null));
         }
 
         /// <summary>
@@ -233,40 +233,40 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("trips")));
 
             // test result.
-            Assert.IsNotNull(feed.Trips);
+            Assert.That(feed.Trips, Is.Not.Null);
             var trips = feed.Trips.ToList();
-            Assert.AreEqual(11, trips.Count);
+            Assert.That(trips.Count, Is.EqualTo(11));
 
             // @ 1: route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id
             // @ 2: AB,FULLW,AB1,to Bullfrog,0,1,shape_1
             int idx = 0;
-            Assert.AreEqual("AB", trips[idx].RouteId);
-            Assert.AreEqual("FULLW", trips[idx].ServiceId);
-            Assert.AreEqual("AB1", trips[idx].Id);
-            Assert.AreEqual("to Bullfrog", trips[idx].Headsign);
-            Assert.AreEqual(DirectionType.OneDirection, trips[idx].Direction);
-            Assert.AreEqual("1", trips[idx].BlockId);
-            Assert.AreEqual("shape_1", trips[idx].ShapeId);
+            Assert.That(trips[idx].RouteId, Is.EqualTo("AB"));
+            Assert.That(trips[idx].ServiceId, Is.EqualTo("FULLW"));
+            Assert.That(trips[idx].Id, Is.EqualTo("AB1"));
+            Assert.That(trips[idx].Headsign, Is.EqualTo("to Bullfrog"));
+            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OneDirection));
+            Assert.That(trips[idx].BlockId, Is.EqualTo("1"));
+            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_1"));
 
             // @ 10: BFC,FULLW,BFC1,to Furnace Creek Resort,0,1,shape_6
             idx = 5;
-            Assert.AreEqual("BFC", trips[idx].RouteId);
-            Assert.AreEqual("FULLW", trips[idx].ServiceId);
-            Assert.AreEqual("BFC1", trips[idx].Id);
-            Assert.AreEqual("to Furnace Creek Resort", trips[idx].Headsign);
-            Assert.AreEqual(DirectionType.OneDirection, trips[idx].Direction);
-            Assert.AreEqual("1", trips[idx].BlockId);
-            Assert.AreEqual("shape_6", trips[idx].ShapeId);
+            Assert.That(trips[idx].RouteId, Is.EqualTo("BFC"));
+            Assert.That(trips[idx].ServiceId, Is.EqualTo("FULLW"));
+            Assert.That(trips[idx].Id, Is.EqualTo("BFC1"));
+            Assert.That(trips[idx].Headsign, Is.EqualTo("to Furnace Creek Resort"));
+            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OneDirection));
+            Assert.That(trips[idx].BlockId, Is.EqualTo("1"));
+            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_6"));
 
             // AAMV,WE,AAMV4,"""to Airport""",1,,shape_11
             idx = 10;
-            Assert.AreEqual("AAMV", trips[idx].RouteId);
-            Assert.AreEqual("WE", trips[idx].ServiceId);
-            Assert.AreEqual("AAMV4", trips[idx].Id);
-            Assert.AreEqual("\"to Airport\"", trips[idx].Headsign);
-            Assert.AreEqual(DirectionType.OppositeDirection, trips[idx].Direction);
-            Assert.AreEqual("", trips[idx].BlockId);
-            Assert.AreEqual("shape_11", trips[idx].ShapeId);
+            Assert.That(trips[idx].RouteId, Is.EqualTo("AAMV"));
+            Assert.That(trips[idx].ServiceId, Is.EqualTo("WE"));
+            Assert.That(trips[idx].Id, Is.EqualTo("AAMV4"));
+            Assert.That(trips[idx].Headsign, Is.EqualTo("\"to Airport\""));
+            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OppositeDirection));
+            Assert.That(trips[idx].BlockId, Is.EqualTo(""));
+            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_11"));
         }
 
         /// <summary>
@@ -285,28 +285,28 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("stops")));
 
             // test result.
-            Assert.IsNotNull(feed.Stops);
+            Assert.That(feed.Stops, Is.Not.Null);
             var stops = feed.Stops.ToList();
-            Assert.AreEqual(9, stops.Count);
+            Assert.That(stops.Count, Is.EqualTo(9));
 
             // @ 1: stop_id,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url
             // @ 2: FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162,,
             int idx = 0;
-            Assert.AreEqual("FUR_CREEK_RES", stops[idx].Id);
-            Assert.AreEqual("Furnace Creek Resort (Demo)", stops[idx].Name);
-            Assert.AreEqual(string.Empty, stops[idx].Description);
-            Assert.AreEqual(36.425288, stops[idx].Latitude);
-            Assert.AreEqual(-117.133162, stops[idx].Longitude);
-            Assert.AreEqual(string.Empty, stops[idx].Url);
+            Assert.That(stops[idx].Id, Is.EqualTo("FUR_CREEK_RES"));
+            Assert.That(stops[idx].Name, Is.EqualTo("Furnace Creek Resort (Demo)"));
+            Assert.That(stops[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(stops[idx].Latitude, Is.EqualTo(36.425288));
+            Assert.That(stops[idx].Longitude, Is.EqualTo(-117.133162));
+            Assert.That(stops[idx].Url, Is.EqualTo(string.Empty));
 
             // @ 10: AMV,Amargosa Valley (Demo),,36.641496,-116.40094,,
             idx = 8;
-            Assert.AreEqual("AMV", stops[idx].Id);
-            Assert.AreEqual("Amargosa Valley (Demo)", stops[idx].Name);
-            Assert.AreEqual(string.Empty, stops[idx].Description);
-            Assert.AreEqual(36.641496, stops[idx].Latitude);
-            Assert.AreEqual(-116.40094, stops[idx].Longitude);
-            Assert.AreEqual(string.Empty, stops[idx].Url);
+            Assert.That(stops[idx].Id, Is.EqualTo("AMV"));
+            Assert.That(stops[idx].Name, Is.EqualTo("Amargosa Valley (Demo)"));
+            Assert.That(stops[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(stops[idx].Latitude, Is.EqualTo(36.641496));
+            Assert.That(stops[idx].Longitude, Is.EqualTo(-116.40094));
+            Assert.That(stops[idx].Url, Is.EqualTo(string.Empty));
         }
 
         /// <summary>
@@ -325,36 +325,36 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("stop_times")));
 
             // test result.
-            Assert.IsNotNull(feed.StopTimes);
+            Assert.That(feed.StopTimes, Is.Not.Null);
             var stopTimes = feed.StopTimes.ToList();
-            Assert.AreEqual(28, stopTimes.Count);
+            Assert.That(stopTimes.Count, Is.EqualTo(28));
 
             // @ 1: trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,pickup_type,drop_off_time,shape_dist_traveled
             // @ SORTED: AAMV1,8:00:00,8:00:00,BEATTY_AIRPORT,1
             int idx = 0;
-            Assert.AreEqual("AAMV1", stopTimes[idx].TripId);
-            Assert.AreEqual(new TimeOfDay() { Hours = 8 }, stopTimes[idx].ArrivalTime);
-            Assert.AreEqual(new TimeOfDay() { Hours = 8 }, stopTimes[idx].DepartureTime);
-            Assert.AreEqual("BEATTY_AIRPORT", stopTimes[idx].StopId);
-            Assert.AreEqual(1, stopTimes[idx].StopSequence);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stopTimes[idx].StopHeadsign));
-            Assert.AreEqual(null, stopTimes[idx].PickupType);
-            Assert.AreEqual(null, stopTimes[idx].DropOffType);
-            Assert.AreEqual(null, stopTimes[idx].ShapeDistTravelled);
-            Assert.AreEqual(TimePointType.None, stopTimes[idx].TimepointType);
+            Assert.That(stopTimes[idx].TripId, Is.EqualTo("AAMV1"));
+            Assert.That(stopTimes[idx].ArrivalTime, Is.EqualTo(new TimeOfDay() { Hours = 8 }));
+            Assert.That(stopTimes[idx].DepartureTime, Is.EqualTo(new TimeOfDay() { Hours = 8 }));
+            Assert.That(stopTimes[idx].StopId, Is.EqualTo("BEATTY_AIRPORT"));
+            Assert.That(stopTimes[idx].StopSequence, Is.EqualTo(1));
+            Assert.That(stopTimes[idx].StopHeadsign, Is.EqualTo(string.Empty));
+            Assert.That(stopTimes[idx].PickupType, Is.EqualTo(null));
+            Assert.That(stopTimes[idx].DropOffType, Is.EqualTo(null));
+            Assert.That(stopTimes[idx].ShapeDistTravelled, Is.EqualTo(null));
+            Assert.That(stopTimes[idx].TimepointType, Is.EqualTo(TimePointType.None));
 
             // @ SORTED: STBA,6:20:00,6:20:00,BEATTY_AIRPORT,2,,,,
             idx = 27;
-            Assert.AreEqual("STBA", stopTimes[idx].TripId);
-            Assert.AreEqual(new TimeOfDay() { Hours = 6, Minutes = 20 }, stopTimes[idx].ArrivalTime);
-            Assert.AreEqual(new TimeOfDay() { Hours = 6, Minutes = 20 }, stopTimes[idx].DepartureTime);
-            Assert.AreEqual("BEATTY_AIRPORT", stopTimes[idx].StopId);
-            Assert.AreEqual(2, stopTimes[idx].StopSequence);
-            Assert.IsTrue(string.IsNullOrWhiteSpace(stopTimes[idx].StopHeadsign));
-            Assert.AreEqual(null, stopTimes[idx].PickupType);
-            Assert.AreEqual(null, stopTimes[idx].DropOffType);
-            Assert.AreEqual(null, stopTimes[idx].ShapeDistTravelled);
-            Assert.AreEqual(TimePointType.None, stopTimes[idx].TimepointType);
+            Assert.That(stopTimes[idx].TripId, Is.EqualTo("STBA"));
+            Assert.That(stopTimes[idx].ArrivalTime, Is.EqualTo(new TimeOfDay() { Hours = 6, Minutes = 20 }));
+            Assert.That(stopTimes[idx].DepartureTime, Is.EqualTo(new TimeOfDay() { Hours = 6, Minutes = 20 }));
+            Assert.That(stopTimes[idx].StopId, Is.EqualTo("BEATTY_AIRPORT"));
+            Assert.That(stopTimes[idx].StopSequence, Is.EqualTo(2));
+            Assert.That(stopTimes[idx].StopHeadsign, Is.EqualTo(string.Empty));
+            Assert.That(stopTimes[idx].PickupType, Is.EqualTo(null));
+            Assert.That(stopTimes[idx].DropOffType, Is.EqualTo(null));
+            Assert.That(stopTimes[idx].ShapeDistTravelled, Is.EqualTo(null));
+            Assert.That(stopTimes[idx].TimepointType, Is.EqualTo(TimePointType.None));
         }
 
         /// <summary>
@@ -373,9 +373,9 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("frequencies")));
 
             // test result.
-            Assert.IsNotNull(feed.Frequencies);
+            Assert.That(feed.Frequencies, Is.Not.Null);
             var frequencies = feed.Frequencies.ToList();
-            Assert.AreEqual(11, frequencies.Count);
+            Assert.That(frequencies.Count, Is.EqualTo(11));
 
             // @ 1: trip_id,start_time,end_time,headway_secs
             // @ 2: STBA,6:00:00,22:00:00,1800
@@ -383,19 +383,19 @@ namespace GTFS.Test
             // @ 1: route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id
             // @ 2: AB,FULLW,AB1,to Bullfrog,0,1,shape_1
             int idx = 0;
-            Assert.AreEqual("STBA", frequencies[idx].TripId);
-            Assert.AreEqual("6:00:00", frequencies[idx].StartTime);
-            Assert.AreEqual("22:00:00", frequencies[idx].EndTime);
-            Assert.AreEqual("1800", frequencies[idx].HeadwaySecs);
-            Assert.AreEqual(null, frequencies[idx].ExactTimes);
+            Assert.That(frequencies[idx].TripId, Is.EqualTo("STBA"));
+            Assert.That(frequencies[idx].StartTime, Is.EqualTo("6:00:00"));
+            Assert.That(frequencies[idx].EndTime, Is.EqualTo("22:00:00"));
+            Assert.That(frequencies[idx].HeadwaySecs, Is.EqualTo("1800"));
+            Assert.That(frequencies[idx].ExactTimes, Is.EqualTo(null));
 
             // @ 10: CITY2,16:00:00,18:59:59,600
             idx = 8;
-            Assert.AreEqual("CITY2", frequencies[idx].TripId);
-            Assert.AreEqual("16:00:00", frequencies[idx].StartTime);
-            Assert.AreEqual("18:59:59", frequencies[idx].EndTime);
-            Assert.AreEqual("600", frequencies[idx].HeadwaySecs);
-            Assert.AreEqual(null, frequencies[idx].ExactTimes);
+            Assert.That(frequencies[idx].TripId, Is.EqualTo("CITY2"));
+            Assert.That(frequencies[idx].StartTime, Is.EqualTo("16:00:00"));
+            Assert.That(frequencies[idx].EndTime, Is.EqualTo("18:59:59"));
+            Assert.That(frequencies[idx].HeadwaySecs, Is.EqualTo("600"));
+            Assert.That(frequencies[idx].ExactTimes, Is.EqualTo(null));
         }
 
         /// <summary>
@@ -421,36 +421,36 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("calendar")));
 
             // test result.
-            Assert.IsNotNull(feed.Calendars);
+            Assert.That(feed.Calendars, Is.Not.Null);
             var calendars = feed.Calendars.ToList();
-            Assert.AreEqual(2, calendars.Count);
+            Assert.That(calendars.Count, Is.EqualTo(2));
 
             // @ 1: service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
             // @ 2: FULLW,1,1,1,1,1,1,1,20070101,20101231
             int idx = 0;
-            Assert.AreEqual("FULLW", calendars[idx].ServiceId);
-            Assert.AreEqual(true, calendars[idx].Monday);
-            Assert.AreEqual(true, calendars[idx].Tuesday);
-            Assert.AreEqual(true, calendars[idx].Wednesday);
-            Assert.AreEqual(true, calendars[idx].Thursday);
-            Assert.AreEqual(true, calendars[idx].Friday);
-            Assert.AreEqual(true, calendars[idx].Saturday);
-            Assert.AreEqual(true, calendars[idx].Sunday);
-            Assert.AreEqual(new DateTime(2007, 01, 01), calendars[idx].StartDate);
-            Assert.AreEqual(new DateTime(2010, 12, 31), calendars[idx].EndDate);
+            Assert.That(calendars[idx].ServiceId, Is.EqualTo("FULLW"));
+            Assert.That(calendars[idx].Monday, Is.EqualTo(true));
+            Assert.That(calendars[idx].Tuesday, Is.EqualTo(true));
+            Assert.That(calendars[idx].Wednesday, Is.EqualTo(true));
+            Assert.That(calendars[idx].Thursday, Is.EqualTo(true));
+            Assert.That(calendars[idx].Friday, Is.EqualTo(true));
+            Assert.That(calendars[idx].Saturday, Is.EqualTo(true));
+            Assert.That(calendars[idx].Sunday, Is.EqualTo(true));
+            Assert.That(calendars[idx].StartDate, Is.EqualTo(new DateTime(2007, 01, 01)));
+            Assert.That(calendars[idx].EndDate, Is.EqualTo(new DateTime(2010, 12, 31)));
 
             // @3: WE,0,0,0,0,0,1,1,20070101,20101231
             idx = 1;
-            Assert.AreEqual("WE", calendars[idx].ServiceId);
-            Assert.AreEqual(false, calendars[idx].Monday);
-            Assert.AreEqual(false, calendars[idx].Tuesday);
-            Assert.AreEqual(false, calendars[idx].Wednesday);
-            Assert.AreEqual(false, calendars[idx].Thursday);
-            Assert.AreEqual(false, calendars[idx].Friday);
-            Assert.AreEqual(true, calendars[idx].Saturday);
-            Assert.AreEqual(true, calendars[idx].Sunday);
-            Assert.AreEqual(new DateTime(2007, 01, 01), calendars[idx].StartDate);
-            Assert.AreEqual(new DateTime(2010, 12, 31), calendars[idx].EndDate);
+            Assert.That(calendars[idx].ServiceId, Is.EqualTo("WE"));
+            Assert.That(calendars[idx].Monday, Is.EqualTo(false));
+            Assert.That(calendars[idx].Tuesday, Is.EqualTo(false));
+            Assert.That(calendars[idx].Wednesday, Is.EqualTo(false));
+            Assert.That(calendars[idx].Thursday, Is.EqualTo(false));
+            Assert.That(calendars[idx].Friday, Is.EqualTo(false));
+            Assert.That(calendars[idx].Saturday, Is.EqualTo(true));
+            Assert.That(calendars[idx].Sunday, Is.EqualTo(true));
+            Assert.That(calendars[idx].StartDate, Is.EqualTo(new DateTime(2007, 01, 01)));
+            Assert.That(calendars[idx].EndDate, Is.EqualTo(new DateTime(2010, 12, 31)));
         }
 
         /// <summary>
@@ -476,15 +476,15 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("calendar_dates")));
 
             // test result.
-            Assert.IsNotNull(feed.CalendarDates);
+            Assert.That(feed.CalendarDates, Is.Not.Null);
             var calendarDates = new List<CalendarDate>(feed.CalendarDates);
 
             // @ 1: service_id,date,exception_type
             // @ 2: FULLW,20070604,2
             int idx = 0;
-            Assert.AreEqual("FULLW", calendarDates[idx].ServiceId);
-            Assert.AreEqual(new System.DateTime(2007, 06, 04), calendarDates[idx].Date);
-            Assert.AreEqual(ExceptionType.Removed, calendarDates[idx].ExceptionType);
+            Assert.That(calendarDates[idx].ServiceId, Is.EqualTo("FULLW"));
+            Assert.That(calendarDates[idx].Date, Is.EqualTo(new System.DateTime(2007, 06, 04)));
+            Assert.That(calendarDates[idx].ExceptionType, Is.EqualTo(ExceptionType.Removed));
         }
 
         /// <summary>
@@ -503,43 +503,43 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("fare_rules")));
 
             // test result.
-            Assert.IsNotNull(feed.FareRules);
+            Assert.That(feed.FareRules, Is.Not.Null);
             var fareRules = feed.FareRules.ToList();
-            Assert.AreEqual(4, fareRules.Count);
+            Assert.That(fareRules.Count, Is.EqualTo(4));
 
             // fare_id,route_id,origin_id,destination_id,contains_id
 
             //p,AB,,,
             int idx = 0;
-            Assert.AreEqual("AB", fareRules[idx].RouteId);
-            Assert.AreEqual("p", fareRules[idx].FareId);
-            Assert.AreEqual(string.Empty, fareRules[idx].OriginId);
-            Assert.AreEqual(string.Empty, fareRules[idx].DestinationId);
-            Assert.AreEqual(string.Empty, fareRules[idx].ContainsId);
+            Assert.That(fareRules[idx].RouteId, Is.EqualTo("AB"));
+            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
+            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
 
             //p,STBA,,,
             idx = 1;
-            Assert.AreEqual("STBA", fareRules[idx].RouteId);
-            Assert.AreEqual("p", fareRules[idx].FareId);
-            Assert.AreEqual(string.Empty, fareRules[idx].OriginId);
-            Assert.AreEqual(string.Empty, fareRules[idx].DestinationId);
-            Assert.AreEqual(string.Empty, fareRules[idx].ContainsId);
+            Assert.That(fareRules[idx].RouteId, Is.EqualTo("STBA"));
+            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
+            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
 
             //p,BFC,,,
             idx = 2;
-            Assert.AreEqual("BFC", fareRules[idx].RouteId);
-            Assert.AreEqual("p", fareRules[idx].FareId);
-            Assert.AreEqual(string.Empty, fareRules[idx].OriginId);
-            Assert.AreEqual(string.Empty, fareRules[idx].DestinationId);
-            Assert.AreEqual(string.Empty, fareRules[idx].ContainsId);
+            Assert.That(fareRules[idx].RouteId, Is.EqualTo("BFC"));
+            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
+            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
 
             //a,AAMV,,,
             idx = 3;
-            Assert.AreEqual("AAMV", fareRules[idx].RouteId);
-            Assert.AreEqual("a", fareRules[idx].FareId);
-            Assert.AreEqual(string.Empty, fareRules[idx].OriginId);
-            Assert.AreEqual(string.Empty, fareRules[idx].DestinationId);
-            Assert.AreEqual(string.Empty, fareRules[idx].ContainsId);
+            Assert.That(fareRules[idx].RouteId, Is.EqualTo("AAMV"));
+            Assert.That(fareRules[idx].FareId, Is.EqualTo("a"));
+            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
         }
 
         /// <summary>
@@ -558,29 +558,29 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("fare_attributes")));
 
             // test result.
-            Assert.IsNotNull(feed.FareAttributes);
+            Assert.That(feed.FareAttributes, Is.Not.Null);
             var fareAttributes = feed.FareAttributes.ToList();
-            Assert.AreEqual(2, fareAttributes.Count);
+            Assert.That(fareAttributes.Count, Is.EqualTo(2));
 
             //fare_id,price,currency_type,payment_method,transfers,transfer_duration
 
             //p,1.25,USD,0,0,
             int idx = 0;
-            Assert.AreEqual("p", fareAttributes[idx].FareId);
-            Assert.AreEqual("1.25", fareAttributes[idx].Price);
-            Assert.AreEqual("USD", fareAttributes[idx].CurrencyType);
-            Assert.AreEqual(PaymentMethodType.OnBoard, fareAttributes[idx].PaymentMethod);
-            Assert.AreEqual(0, fareAttributes[idx].Transfers);
-            Assert.AreEqual(string.Empty, fareAttributes[idx].TransferDuration);
+            Assert.That(fareAttributes[idx].FareId, Is.EqualTo("p"));
+            Assert.That(fareAttributes[idx].Price, Is.EqualTo("1.25"));
+            Assert.That(fareAttributes[idx].CurrencyType, Is.EqualTo("USD"));
+            Assert.That(fareAttributes[idx].PaymentMethod, Is.EqualTo(PaymentMethodType.OnBoard));
+            Assert.That(fareAttributes[idx].Transfers, Is.EqualTo(0));
+            Assert.That(fareAttributes[idx].TransferDuration, Is.EqualTo(string.Empty));
 
             //a,5.25,USD,0,0,
             idx = 1;
-            Assert.AreEqual("a", fareAttributes[idx].FareId);
-            Assert.AreEqual("5.25", fareAttributes[idx].Price);
-            Assert.AreEqual("USD", fareAttributes[idx].CurrencyType);
-            Assert.AreEqual(PaymentMethodType.OnBoard, fareAttributes[idx].PaymentMethod);
-            Assert.AreEqual(0, fareAttributes[idx].Transfers);
-            Assert.AreEqual(string.Empty, fareAttributes[idx].TransferDuration);
+            Assert.That(fareAttributes[idx].FareId, Is.EqualTo("a"));
+            Assert.That(fareAttributes[idx].Price, Is.EqualTo("5.25"));
+            Assert.That(fareAttributes[idx].CurrencyType, Is.EqualTo("USD"));
+            Assert.That(fareAttributes[idx].PaymentMethod, Is.EqualTo(PaymentMethodType.OnBoard));
+            Assert.That(fareAttributes[idx].Transfers, Is.EqualTo(0));
+            Assert.That(fareAttributes[idx].TransferDuration, Is.EqualTo(string.Empty));
         }
 
         /// <summary>
@@ -599,32 +599,32 @@ namespace GTFS.Test
             var feed = reader.Read(source, source.First(x => x.Name.Equals("transfers")));
 
             // test result.
-            Assert.IsNotNull(feed.Transfers);
+            Assert.That(feed.Transfers, Is.Not.Null);
             var tranfers = feed.Transfers.ToList();
-            Assert.AreEqual(3, tranfers.Count);
+            Assert.That(tranfers.Count, Is.EqualTo(3));
 
             //from_stop_id,to_stop_id,transfer_type,min_transfer_time
 
             //BULLFROG,STAGECOACH,2,300
             int idx = 0;
-            Assert.AreEqual("BULLFROG", tranfers[idx].FromStopId);
-            Assert.AreEqual("STAGECOACH", tranfers[idx].ToStopId);
-            Assert.AreEqual(TransferType.MinimumTime, tranfers[idx].TransferType);
-            Assert.AreEqual("300", tranfers[idx].MinimumTransferTime);
+            Assert.That(tranfers[idx].FromStopId, Is.EqualTo("BULLFROG"));
+            Assert.That(tranfers[idx].ToStopId, Is.EqualTo("STAGECOACH"));
+            Assert.That(tranfers[idx].TransferType, Is.EqualTo(TransferType.MinimumTime));
+            Assert.That(tranfers[idx].MinimumTransferTime, Is.EqualTo("300"));
 
             //BULLFROG,BEATTY_AIRPORT,3,
             idx = 1;
-            Assert.AreEqual("BULLFROG", tranfers[idx].FromStopId);
-            Assert.AreEqual("BEATTY_AIRPORT", tranfers[idx].ToStopId);
-            Assert.AreEqual(TransferType.NotPossible, tranfers[idx].TransferType);
-            Assert.AreEqual(string.Empty, tranfers[idx].MinimumTransferTime);
+            Assert.That(tranfers[idx].FromStopId, Is.EqualTo("BULLFROG"));
+            Assert.That(tranfers[idx].ToStopId, Is.EqualTo("BEATTY_AIRPORT"));
+            Assert.That(tranfers[idx].TransferType, Is.EqualTo(TransferType.NotPossible));
+            Assert.That(tranfers[idx].MinimumTransferTime, Is.EqualTo(string.Empty));
 
             //EMSI,AMV,1,
             idx = 2;
-            Assert.AreEqual("EMSI", tranfers[idx].FromStopId);
-            Assert.AreEqual("AMV", tranfers[idx].ToStopId);
-            Assert.AreEqual(TransferType.TimedTransfer, tranfers[idx].TransferType);
-            Assert.AreEqual(string.Empty, tranfers[idx].MinimumTransferTime);
+            Assert.That(tranfers[idx].FromStopId, Is.EqualTo("EMSI"));
+            Assert.That(tranfers[idx].ToStopId, Is.EqualTo("AMV"));
+            Assert.That(tranfers[idx].TransferType, Is.EqualTo(TransferType.TimedTransfer));
+            Assert.That(tranfers[idx].MinimumTransferTime, Is.EqualTo(string.Empty));
         }
     }
 }

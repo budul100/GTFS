@@ -41,58 +41,58 @@ namespace GTFS.Test.Entities
 
             calendar.Mask = 0;
 
-            Assert.AreEqual(calendar.Monday, false);
-            Assert.AreEqual(calendar.Tuesday, false);
-            Assert.AreEqual(calendar.Wednesday, false);
-            Assert.AreEqual(calendar.Thursday, false);
-            Assert.AreEqual(calendar.Friday, false);
-            Assert.AreEqual(calendar.Saturday, false);
-            Assert.AreEqual(calendar.Sunday, false);
+            Assert.That(calendar.Monday, Is.EqualTo(false));
+            Assert.That(calendar.Tuesday, Is.EqualTo(false));
+            Assert.That(calendar.Wednesday, Is.EqualTo(false));
+            Assert.That(calendar.Thursday, Is.EqualTo(false));
+            Assert.That(calendar.Friday, Is.EqualTo(false));
+            Assert.That(calendar.Saturday, Is.EqualTo(false));
+            Assert.That(calendar.Sunday, Is.EqualTo(false));
 
             calendar.Mask = 1;
 
-            Assert.AreEqual(calendar.Monday, true);
-            Assert.AreEqual(calendar.Tuesday, false);
-            Assert.AreEqual(calendar.Wednesday, false);
-            Assert.AreEqual(calendar.Thursday, false);
-            Assert.AreEqual(calendar.Friday, false);
-            Assert.AreEqual(calendar.Saturday, false);
-            Assert.AreEqual(calendar.Sunday, false);
+            Assert.That(calendar.Monday, Is.EqualTo(true));
+            Assert.That(calendar.Tuesday, Is.EqualTo(false));
+            Assert.That(calendar.Wednesday, Is.EqualTo(false));
+            Assert.That(calendar.Thursday, Is.EqualTo(false));
+            Assert.That(calendar.Friday, Is.EqualTo(false));
+            Assert.That(calendar.Saturday, Is.EqualTo(false));
+            Assert.That(calendar.Sunday, Is.EqualTo(false));
 
             calendar.Mask = 64;
 
-            Assert.AreEqual(calendar.Monday, false);
-            Assert.AreEqual(calendar.Tuesday, false);
-            Assert.AreEqual(calendar.Wednesday, false);
-            Assert.AreEqual(calendar.Thursday, false);
-            Assert.AreEqual(calendar.Friday, false);
-            Assert.AreEqual(calendar.Saturday, false);
-            Assert.AreEqual(calendar.Sunday, true);
+            Assert.That(calendar.Monday, Is.EqualTo(false));
+            Assert.That(calendar.Tuesday, Is.EqualTo(false));
+            Assert.That(calendar.Wednesday, Is.EqualTo(false));
+            Assert.That(calendar.Thursday, Is.EqualTo(false));
+            Assert.That(calendar.Friday, Is.EqualTo(false));
+            Assert.That(calendar.Saturday, Is.EqualTo(false));
+            Assert.That(calendar.Sunday, Is.EqualTo(true));
 
             calendar.Mask = 1+4+8+16;
 
-            Assert.AreEqual(calendar.Monday, true);
-            Assert.AreEqual(calendar.Tuesday, false);
-            Assert.AreEqual(calendar.Wednesday, true);
-            Assert.AreEqual(calendar.Thursday, true);
-            Assert.AreEqual(calendar.Friday, true);
-            Assert.AreEqual(calendar.Saturday, false);
-            Assert.AreEqual(calendar.Sunday, false);
+            Assert.That(calendar.Monday, Is.EqualTo(true));
+            Assert.That(calendar.Tuesday, Is.EqualTo(false));
+            Assert.That(calendar.Wednesday, Is.EqualTo(true));
+            Assert.That(calendar.Thursday, Is.EqualTo(true));
+            Assert.That(calendar.Friday, Is.EqualTo(true));
+            Assert.That(calendar.Saturday, Is.EqualTo(false));
+            Assert.That(calendar.Sunday, Is.EqualTo(false));
 
             calendar.Mask = 0;
             calendar.Monday = true;
-            Assert.AreEqual(1, calendar.Mask);
+            Assert.That(calendar.Mask, Is.EqualTo(1));
 
             calendar.Mask = 0;
             calendar.Sunday = true;
-            Assert.AreEqual(64, calendar.Mask);
+            Assert.That(calendar.Mask, Is.EqualTo(64));
 
             calendar.Mask = 0;
             calendar.Monday = true;
             calendar.Wednesday = true;
             calendar.Thursday = true;
             calendar.Friday = true;
-            Assert.AreEqual(1+4+8+16, calendar.Mask);
+            Assert.That(calendar.Mask, Is.EqualTo(1+4+8+16));
         }
 
         /// <summary>
@@ -118,17 +118,17 @@ namespace GTFS.Test.Entities
             };
 
             Calendar merge;
-            Assert.IsTrue(calendar1.TryMerge(calendar2, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(64, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 29), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 06), merge.EndDate);
+            Assert.That(calendar1.TryMerge(calendar2, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(64));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 29)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 06)));
 
-            Assert.IsTrue(calendar2.TryMerge(calendar1, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(64, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 29), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 06), merge.EndDate);
+            Assert.That(calendar2.TryMerge(calendar1, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(64));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 29)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 06)));
 
             // two calendars one completely overlapping the other.
             calendar1 = new Calendar()
@@ -146,17 +146,17 @@ namespace GTFS.Test.Entities
                 EndDate = new System.DateTime(2015, 12, 06)
             };
 
-            Assert.IsTrue(calendar1.TryMerge(calendar2, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(64, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 29), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 06), merge.EndDate);
+            Assert.That(calendar1.TryMerge(calendar2, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(64));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 29)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 06)));
 
-            Assert.IsTrue(calendar2.TryMerge(calendar1, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(64, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 29), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 06), merge.EndDate);
+            Assert.That(calendar2.TryMerge(calendar1, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(64));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 29)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 06)));
 
             // two calendars one completely overlapping the other.
             calendar1 = new Calendar()
@@ -176,17 +176,17 @@ namespace GTFS.Test.Entities
             };
             calendar2.TrimDates();
 
-            Assert.IsTrue(calendar1.TryMerge(calendar2, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(64, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 29), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 06), merge.EndDate);
+            Assert.That(calendar1.TryMerge(calendar2, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(64));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 29)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 06)));
 
-            Assert.IsTrue(calendar2.TryMerge(calendar1, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(64, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 29), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 06), merge.EndDate);
+            Assert.That(calendar2.TryMerge(calendar1, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(64));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 29)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 06)));
 
             // two calendars one completely overlapping the other.
             calendar1 = new Calendar()
@@ -206,17 +206,17 @@ namespace GTFS.Test.Entities
             };
             calendar2.TrimDates();
 
-            Assert.IsTrue(calendar1.TryMerge(calendar2, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(1+64, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 23), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 06), merge.EndDate);
+                    Assert.That(calendar1.TryMerge(calendar2, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(1+64));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 23)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 06)));
 
-            Assert.IsTrue(calendar2.TryMerge(calendar1, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(1+64, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 23), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 06), merge.EndDate);
+            Assert.That(calendar2.TryMerge(calendar1, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(1+64));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 23)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 06)));
 
             // two calendars with conflicting masks.
             calendar1 = new Calendar()
@@ -236,8 +236,8 @@ namespace GTFS.Test.Entities
             };
             calendar2.TrimDates();
 
-            Assert.IsFalse(calendar1.TryMerge(calendar2, out merge));
-            Assert.IsFalse(calendar2.TryMerge(calendar1, out merge));
+            Assert.That(calendar1.TryMerge(calendar2, out merge), Is.False);
+            Assert.That(calendar2.TryMerge(calendar1, out merge), Is.False);
 
             // two calendars both spanning more than one week.
             calendar1 = new Calendar()
@@ -257,17 +257,17 @@ namespace GTFS.Test.Entities
             };
             calendar2.TrimDates();
 
-            Assert.IsTrue(calendar1.TryMerge(calendar2, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(127, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 16), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 13), merge.EndDate);
+            Assert.That(calendar1.TryMerge(calendar2, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(127));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 16)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 13)));
 
-            Assert.IsTrue(calendar2.TryMerge(calendar1, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(127, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 16), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 13), merge.EndDate);
+            Assert.That(calendar2.TryMerge(calendar1, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(127));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 16)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 13)));
 
             // two calendars first one week with a few don't-case other more than a week.
             calendar1 = new Calendar()
@@ -287,17 +287,17 @@ namespace GTFS.Test.Entities
             };
             calendar2.TrimDates();
 
-            Assert.IsTrue(calendar1.TryMerge(calendar2, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(127, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 26), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 13), merge.EndDate);
+            Assert.That(calendar1.TryMerge(calendar2, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(127));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 26)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 13)));
 
-            Assert.IsTrue(calendar2.TryMerge(calendar1, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(127, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2015, 11, 26), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2015, 12, 13), merge.EndDate);
+            Assert.That(calendar2.TryMerge(calendar1, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(127));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2015, 11, 26)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2015, 12, 13)));
 
             // two calendars first two weeks with a few don't-cares other the week right after.
             calendar1 = new Calendar()
@@ -317,11 +317,11 @@ namespace GTFS.Test.Entities
             };
             calendar2.TrimDates();
 
-            Assert.IsTrue(calendar1.TryMerge(calendar2, out merge));
-            Assert.AreEqual("0", merge.ServiceId);
-            Assert.AreEqual(127, merge.Mask);
-            Assert.AreEqual(new System.DateTime(2016, 01, 01), merge.StartDate);
-            Assert.AreEqual(new System.DateTime(2016, 01, 17), merge.EndDate);
+            Assert.That(calendar1.TryMerge(calendar2, out merge), Is.True);
+            Assert.That(merge.ServiceId, Is.EqualTo("0"));
+            Assert.That(merge.Mask, Is.EqualTo(127));
+            Assert.That(merge.StartDate, Is.EqualTo(new System.DateTime(2016, 01, 01)));
+            Assert.That(merge.EndDate, Is.EqualTo(new System.DateTime(2016, 01, 17)));
         }
     }
 }

@@ -59,14 +59,14 @@ namespace GTFS.Test
             // verify initial state.
             var emptyFeedInfo = new FeedInfo();
             var oldFeedInfo = feed.GetFeedInfo();
-            Assert.IsTrue(_comparer.Equals(emptyFeedInfo, oldFeedInfo));
+            Assert.That(_comparer.Equals(emptyFeedInfo, oldFeedInfo), Is.True);
 
             // set the feed info.
             feed.SetFeedInfo(info);
 
             // test result.
             var newFeedInfo = feed.GetFeedInfo();
-            Assert.IsTrue(_comparer.Equals(info, newFeedInfo));
+            Assert.That(_comparer.Equals(info, newFeedInfo), Is.True);
         }
     }
 }

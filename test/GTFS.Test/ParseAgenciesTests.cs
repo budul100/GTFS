@@ -64,11 +64,11 @@ namespace GTFS.Test
 
 
             var agencies = feed.Agencies;
-            Assert.IsNotNull(agencies);
+            Assert.That(agencies, Is.Not.Null);
 
             var agency = agencies.SingleOrDefault();
-            Assert.IsNotNull(agency);
-            Assert.IsNull(agency.Id);
+            Assert.That(agency, Is.Not.Null);
+            Assert.That(agency.Id, Is.Null);
         }
 
         /// <summary>
@@ -88,11 +88,11 @@ namespace GTFS.Test
 
 
             var agencies = feed.Agencies;
-            Assert.IsNotNull(agencies);
+            Assert.That(agencies, Is.Not.Null);
 
             var agency = agencies.SingleOrDefault();
-            Assert.IsNotNull(agency);
-            Assert.IsNotNull(agency.Id);
+            Assert.That(agency, Is.Not.Null);
+            Assert.That(agency.Id, Is.Not.Null);
         }
 
         /// <summary>
@@ -112,9 +112,9 @@ namespace GTFS.Test
 
 
             var agencies = feed.Agencies;
-            Assert.IsNotNull(agencies);
-            Assert.IsNotNull(agencies.SingleOrDefault(x => x.Id == "DTA"));
-            Assert.IsNotNull(agencies.SingleOrDefault(x => x.Id == "OTA"));
+            Assert.That(agencies, Is.Not.Null);
+            Assert.That(agencies.SingleOrDefault(x => x.Id == "DTA"), Is.Not.Null);
+            Assert.That(agencies.SingleOrDefault(x => x.Id == "OTA"), Is.Not.Null);
         }
 
         /// <summary>
@@ -130,11 +130,12 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agencies_no_id.txt"),Agency)
             };
             
-            Assert.Throws<GTFSRequiredFieldMissingException>(() =>
-            {
-                reader.Read(source, source.First(x => x.Name.Equals(Agency)));
-            },
-            GTFSRequiredFieldMissingException.MessageFormat, "agency_id", Agency);
+            Assert.Throws<GTFSRequiredFieldMissingException>(
+                new TestDelegate(() =>
+                {
+                    reader.Read(source, source.First(x => x.Name.Equals(Agency)));
+                }),
+                GTFSRequiredFieldMissingException.MessageFormat, "agency_id", Agency);
         }
 
         /// <summary>
@@ -154,11 +155,11 @@ namespace GTFS.Test
 
 
             var agencies = feed.Agencies;
-            Assert.IsNotNull(agencies);
+            Assert.That(agencies, Is.Not.Null);
 
             var agency = agencies.SingleOrDefault();
-            Assert.IsNotNull(agency);
-            Assert.AreEqual("support@demotransit.com", agency.Email);
+            Assert.That(agency, Is.Not.Null);
+            Assert.That(agency.Email, Is.EqualTo("support@demotransit.com"));
         }
     }
 }
