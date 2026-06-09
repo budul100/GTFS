@@ -12,6 +12,8 @@ namespace GTFS
     /// </summary>
     public static class GTFSReaderExtensions
     {
+        #region Public Methods
+
         /// <summary>
         /// Reads a GTFS feed from the given source.
         /// </summary>
@@ -63,24 +65,24 @@ namespace GTFS
         /// <returns>The GTFS feed.</returns>
         public static T Read<T>(this GTFSReader<T> reader, string path, char? separator = null) where T : IGTFSFeed, new()
         {
-            if (path == null) throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             if (Directory.Exists(path))
             {
-                using (var source = new GTFSDirectorySource(path, separator))
-                {
-                    return reader.Read<T>(source);
-                }
+                using var source = new GTFSDirectorySource(path, separator);
+
+                return reader.Read<T>(source);
             }
             else if (File.Exists(path) && path.ToLower().EndsWith(".zip"))
             {
-                using (var source = new GTFSArchiveSource(File.OpenRead(path), separator))
-                {
-                    return reader.Read<T>(source);
-                }
+                using var source = new GTFSArchiveSource(File.OpenRead(path), separator);
+
+                return reader.Read<T>(source);
             }
-            
+
             throw new ArgumentException("Could not open GTFS feed, directory or archive not found.", nameof(path));
         }
+
+        #endregion Public Methods
     }
 }

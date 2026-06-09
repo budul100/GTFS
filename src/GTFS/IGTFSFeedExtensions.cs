@@ -31,6 +31,29 @@ namespace GTFS
     /// </summary>
     public static class IGTFSFeedExtensions
     {
+        #region Public Methods
+
+        /// <summary>
+        /// Returns all routes along the stops that statisfy the given filter.
+        /// </summary>
+        /// <returns></returns>
+        public static HashSet<string> GetRoutesFor(this IGTFSFeed feed, Func<Stop, bool> stopFilter)
+        {
+            // collect tripid's.
+            var tripIds = feed.GetTripsFor(stopFilter);
+
+            // collect routeid's.
+            var routeIds = new HashSet<string>();
+            foreach (var trip in feed.Trips)
+            {
+                if (tripIds.Contains(trip.Id))
+                {
+                    routeIds.Add(trip.RouteId);
+                }
+            }
+            return routeIds;
+        }
+
         /// <summary>
         /// Returns all stops that statisfy the given filter.
         /// </summary>
@@ -70,25 +93,6 @@ namespace GTFS
             return tripIds;
         }
 
-        /// <summary>
-        /// Returns all routes along the stops that statisfy the given filter.
-        /// </summary>
-        /// <returns></returns>
-        public static HashSet<string> GetRoutesFor(this IGTFSFeed feed, Func<Stop, bool> stopFilter)
-        {
-            // collect tripid's.
-            var tripIds = feed.GetTripsFor(stopFilter);
-
-            // collect routeid's.
-            var routeIds = new HashSet<string>();
-            foreach (var trip in feed.Trips)
-            {
-                if (tripIds.Contains(trip.Id))
-                {
-                    routeIds.Add(trip.RouteId);
-                }
-            }
-            return routeIds;
-        }
+        #endregion Public Methods
     }
 }

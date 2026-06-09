@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using GTFS.IO;
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using GTFS.Entities;
 using GTFS.Entities.Enumerations;
-using System;
-using System.Text;
+using GTFS.IO;
 
 namespace GTFS
 {
@@ -36,6 +36,8 @@ namespace GTFS
     /// <typeparam name="T"></typeparam>
     public class GTFSWriter<T> where T : IGTFSFeed
     {
+        #region Public Methods
+
         /// <summary>
         /// Writes the given feed to the given target files.
         /// </summary>
@@ -74,6 +76,10 @@ namespace GTFS
             this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "levels"), levelsToWrite);
             this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "pathways"), pathwaysToWrite);
         }
+
+        #endregion Public Methods
+
+        #region Protected Methods
 
         /// <summary>
         /// Writes all levels to the given levels file.
@@ -404,6 +410,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[6];
+
                 if (!initialized)
                 {
                     if (file.Exists)
@@ -419,7 +426,6 @@ namespace GTFS
                     data[4] = "feed_end_date";
                     data[5] = "feed_version";
                     file.Write(data);
-                    initialized = true;
                 }
 
                 // write details.
@@ -771,6 +777,331 @@ namespace GTFS
         }
 
         /// <summary>
+        /// Writes an accessibility type.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldAccessibilityType(string name, string fieldName, WheelchairAccessibilityType? value)
+        {
+            if (value.HasValue)
+            {
+                //0 (or empty) - indicates that there is no accessibility information for the trip
+                //1 - indicates that the vehicle being used on this particular trip can accommodate at least one rider in a wheelchair
+                //2 - indicates that no riders in wheelchairs can be accommodated on this trip
+
+                switch (value.Value)
+                {
+                    case WheelchairAccessibilityType.NoInformation:
+                        return "0";
+
+                    case WheelchairAccessibilityType.SomeAccessibility:
+                        return "1";
+
+                    case WheelchairAccessibilityType.NoAccessibility:
+                        return "2";
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes the bool.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldBool(string name, string fieldName, bool? value)
+        {
+            if (value.HasValue)
+            {
+                if (value.Value)
+                {
+                    return "1";
+                }
+                return "0";
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes a color.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldColor(string name, string fieldName, int? value)
+        {
+            return value.ToHexColorString();
+        }
+
+        /// <summary>
+        /// Writes the date.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        protected string WriteFieldDate(string name, string fieldName, DateTime dateTime)
+        {
+            return dateTime.ToString("yyyyMMdd");
+        }
+
+        /// <summary>
+        /// Writes a direction type.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldDirectionType(string name, string fieldName, DirectionType? value)
+        {
+            if (value.HasValue)
+            {
+                //0 - travel in one direction (e.g. outbound travel)
+                //1 - travel in the opposite direction (e.g. inbound travel)
+
+                switch (value.Value)
+                {
+                    case DirectionType.OneDirection:
+                        return "0";
+
+                    case DirectionType.OppositeDirection:
+                        return "1";
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes a double.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldDouble(string name, string fieldName, double? value)
+        {
+            if (value.HasValue)
+            {
+                return value.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes the drop off type.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldDropOffType(string name, string fieldName, DropOffType? value)
+        {
+            if (value.HasValue)
+            {
+                switch (value.Value)
+                {
+                    case DropOffType.Regular:
+                        return "0";
+
+                    case DropOffType.NoPickup:
+                        return "1";
+
+                    case DropOffType.PhoneForPickup:
+                        return "2";
+
+                    case DropOffType.DriverForPickup:
+                        return "3";
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes the exception type.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldExceptionType(string name, string fieldName, ExceptionType value)
+        {
+            //A value of 1 indicates that service has been added for the specified date.
+            //A value of 2 indicates that service has been removed for the specified date.
+
+            return value switch
+            {
+                ExceptionType.Added => "1",
+                ExceptionType.Removed => "2",
+                _ => string.Empty,
+            };
+        }
+
+        /// <summary>
+        /// Writes an int.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldInt(string name, string fieldName, int? value)
+        {
+            if (value.HasValue)
+            {
+                return value.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes is bidirectional.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldIsBidirectional(string name, string fieldName, IsBidirectional? value)
+        {
+            if (value.HasValue)
+            {
+                //0: Unidirectional pathway, it can only be used from from_stop_id to to_stop_id.
+                //1: Bidirectional pathway, it can be used in the two directions.
+
+                switch (value.Value)
+                {
+                    case IsBidirectional.Unidirectional:
+                        return "0";
+
+                    case IsBidirectional.Bidirectional:
+                        return "1";
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes the location type.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldLocationType(string name, string fieldName, LocationType? value)
+        {
+            if (value.HasValue)
+            {
+                switch (value.Value)
+                {
+                    case LocationType.Stop:
+                        return "0";
+
+                    case LocationType.Station:
+                        return "1";
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes a pathway mode.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldPathwayMode(string name, string fieldName, PathwayMode? value)
+        {
+            if (value.HasValue)
+            {
+                //1 - walkway
+                //2 - stairs
+                //3 - moving sidewalk/travelator
+                //4 - escalator
+                //5 - elevator
+                //6 - fare gate (or payment gate): A pathway that crosses into an area of the station where a proof of payment is required (usually via a physical payment gate).
+                //7 - exit gate: Indicates a pathway exiting an area where proof-of-payment is required into an area where proof-of-payment is no longer required.
+
+                switch (value.Value)
+                {
+                    case PathwayMode.Walkway:
+                        return "1";
+
+                    case PathwayMode.Stairs:
+                        return "2";
+
+                    case PathwayMode.Travelator:
+                        return "3";
+
+                    case PathwayMode.Escalator:
+                        return "4";
+
+                    case PathwayMode.Elevator:
+                        return "5";
+
+                    case PathwayMode.FareGate:
+                        return "6";
+
+                    case PathwayMode.ExitGate:
+                        return "7";
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Writes the payment method.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldPaymentMethod(string name, string fieldName, PaymentMethodType value)
+        {
+            //0 - Fare is paid on board.
+            //1 - Fare must be paid before boarding.
+
+            return value switch
+            {
+                PaymentMethodType.OnBoard => "0",
+                PaymentMethodType.BeforeBoarding => "1",
+                _ => string.Empty,
+            };
+        }
+
+        /// <summary>
+        /// Writes the pickup type.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected string WriteFieldPickupType(string name, string fieldName, PickupType? value)
+        {
+            if (value.HasValue)
+            {
+                switch (value.Value)
+                {
+                    case PickupType.Regular:
+                        return "0";
+
+                    case PickupType.NoPickup:
+                        return "1";
+
+                    case PickupType.PhoneForPickup:
+                        return "2";
+
+                    case PickupType.DriverForPickup:
+                        return "3";
+                }
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Writes a string-field.
         /// </summary>
         /// <param name="name"></param>
@@ -808,192 +1139,19 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Writes the exception type.
+        /// Writes a timeofday.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
         /// <returns></returns>
-        protected string WriteFieldExceptionType(string name, string fieldName, ExceptionType value)
+        protected string WriteFieldTimeOfDay(string name, string fieldName, TimeOfDay? value)
         {
-            //A value of 1 indicates that service has been added for the specified date.
-            //A value of 2 indicates that service has been removed for the specified date.
-
-            return value switch
+            if (!value.HasValue)
             {
-                ExceptionType.Added => "1",
-                ExceptionType.Removed => "2",
-                _ => string.Empty,
-            };
-        }
-
-        /// <summary>
-        /// Writes the date.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        protected string WriteFieldDate(string name, string fieldName, DateTime dateTime)
-        {
-            return dateTime.ToString("yyyyMMdd");
-        }
-
-        /// <summary>
-        /// Writes the bool.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldBool(string name, string fieldName, bool? value)
-        {
-            if (value.HasValue)
-            {
-                if (value.Value)
-                {
-                    return "1";
-                }
-                return "0";
+                return string.Empty;
             }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Writes the uint.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldUint(string name, string fieldName, uint? value)
-        {
-            if (value.HasValue)
-            {
-                return value.Value.ToString();
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Writes the payment method.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldPaymentMethod(string name, string fieldName, PaymentMethodType value)
-        {
-            //0 - Fare is paid on board.
-            //1 - Fare must be paid before boarding.
-
-            return value switch
-            {
-                PaymentMethodType.OnBoard => "0",
-                PaymentMethodType.BeforeBoarding => "1",
-                _ => string.Empty,
-            };
-        }
-
-        /// <summary>
-        /// Writes a color.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldColor(string name, string fieldName, int? value)
-        {
-            return value.ToHexColorString();
-        }
-
-        /// <summary>
-        /// Writes the route type.
-        /// </summary>
-        /// <returns></returns>
-        private string WriteFieldRouteType(string name, string fieldName, RouteTypeExtended value)
-        {
-            return ((int)value).ToString();
-        }
-
-        /// <summary>
-        /// Writes a double.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldDouble(string name, string fieldName, double? value)
-        {
-            if (value.HasValue)
-            {
-                return value.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Writes an int.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldInt(string name, string fieldName, int? value)
-        {
-            if (value.HasValue)
-            {
-                return value.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Writes the location type.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldLocationType(string name, string fieldName, LocationType? value)
-        {
-            if (value.HasValue)
-            {
-                switch (value.Value)
-                {
-                    case LocationType.Stop:
-                        return "0";
-                    case LocationType.Station:
-                        return "1";
-                }
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Writes the drop off type.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldDropOffType(string name, string fieldName, DropOffType? value)
-        {
-            if (value.HasValue)
-            {
-                switch (value.Value)
-                {
-                    case DropOffType.Regular:
-                        return "0";
-                    case DropOffType.NoPickup:
-                        return "1";
-                    case DropOffType.PhoneForPickup:
-                        return "2";
-                    case DropOffType.DriverForPickup:
-                        return "3";
-                }
-            }
-            return string.Empty;
+            return string.Format("{0}:{1}:{2}",
+                value.Value.Hours.ToString("00"),
+                value.Value.Minutes.ToString("00"),
+                value.Value.Seconds.ToString("00"));
         }
 
         /// <summary>
@@ -1008,48 +1166,6 @@ namespace GTFS
                 TimePointType.Exact => "1",
                 _ => string.Empty,
             };
-        }
-
-        /// <summary>
-        /// Writes the pickup type.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldPickupType(string name, string fieldName, PickupType? value)
-        {
-            if (value.HasValue)
-            {
-                switch (value.Value)
-                {
-                    case PickupType.Regular:
-                        return "0";
-                    case PickupType.NoPickup:
-                        return "1";
-                    case PickupType.PhoneForPickup:
-                        return "2";
-                    case PickupType.DriverForPickup:
-                        return "3";
-                }
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Writes a timeofday.
-        /// </summary>
-        /// <returns></returns>
-        protected string WriteFieldTimeOfDay(string name, string fieldName, TimeOfDay? value)
-        {
-            if (!value.HasValue)
-            {
-                return string.Empty;
-            }
-            return string.Format("{0}:{1}:{2}",
-                value.Value.Hours.ToString("00"),
-                value.Value.Minutes.ToString("00"),
-                value.Value.Seconds.ToString("00"));
         }
 
         /// <summary>
@@ -1072,122 +1188,34 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Writes an accessibility type.
+        /// Writes the uint.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="fieldName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        protected string WriteFieldAccessibilityType(string name, string fieldName, WheelchairAccessibilityType? value)
+        protected string WriteFieldUint(string name, string fieldName, uint? value)
         {
             if (value.HasValue)
             {
-                //0 (or empty) - indicates that there is no accessibility information for the trip
-                //1 - indicates that the vehicle being used on this particular trip can accommodate at least one rider in a wheelchair
-                //2 - indicates that no riders in wheelchairs can be accommodated on this trip
-
-                switch (value.Value)
-                {
-                    case WheelchairAccessibilityType.NoInformation:
-                        return "0";
-                    case WheelchairAccessibilityType.SomeAccessibility:
-                        return "1";
-                    case WheelchairAccessibilityType.NoAccessibility:
-                        return "2";
-                }
+                return value.Value.ToString();
             }
             return string.Empty;
         }
+
+        #endregion Protected Methods
+
+        #region Private Methods
 
         /// <summary>
-        /// Writes is bidirectional.
+        /// Writes the route type.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
         /// <returns></returns>
-        protected string WriteFieldIsBidirectional(string name, string fieldName, IsBidirectional? value)
+        private string WriteFieldRouteType(string name, string fieldName, RouteTypeExtended value)
         {
-            if (value.HasValue)
-            {
-                //0: Unidirectional pathway, it can only be used from from_stop_id to to_stop_id.
-                //1: Bidirectional pathway, it can be used in the two directions.
-
-                switch (value.Value)
-                {
-                    case IsBidirectional.Unidirectional:
-                        return "0";
-                    case IsBidirectional.Bidirectional:
-                        return "1";
-                }
-            }
-            return string.Empty;
+            return ((int)value).ToString();
         }
 
-        /// <summary>
-        /// Writes a pathway mode.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldPathwayMode(string name, string fieldName, PathwayMode? value)
-        {
-            if (value.HasValue)
-            {
-                //1 - walkway
-                //2 - stairs
-                //3 - moving sidewalk/travelator
-                //4 - escalator
-                //5 - elevator
-                //6 - fare gate (or payment gate): A pathway that crosses into an area of the station where a proof of payment is required (usually via a physical payment gate).
-                //7 - exit gate: Indicates a pathway exiting an area where proof-of-payment is required into an area where proof-of-payment is no longer required.
-
-                switch (value.Value)
-                {
-                    case PathwayMode.Walkway:
-                        return "1";
-                    case PathwayMode.Stairs:
-                        return "2";
-                    case PathwayMode.Travelator:
-                        return "3";
-                    case PathwayMode.Escalator:
-                        return "4";
-                    case PathwayMode.Elevator:
-                        return "5";
-                    case PathwayMode.FareGate:
-                        return "6";
-                    case PathwayMode.ExitGate:
-                        return "7";
-                }
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Writes a direction type.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        protected string WriteFieldDirectionType(string name, string fieldName, DirectionType? value)
-        {
-            if (value.HasValue)
-            {
-
-                //0 - travel in one direction (e.g. outbound travel)
-                //1 - travel in the opposite direction (e.g. inbound travel)
-
-                switch (value.Value)
-                {
-                    case DirectionType.OneDirection:
-                        return "0";
-                    case DirectionType.OppositeDirection:
-                        return "1";
-                }
-            }
-            return string.Empty;
-        }
+        #endregion Private Methods
     }
 }

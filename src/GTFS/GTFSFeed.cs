@@ -22,7 +22,6 @@
 
 using GTFS.Entities;
 using GTFS.Entities.Collections;
-using System.Collections.Generic;
 
 namespace GTFS
 {
@@ -31,6 +30,17 @@ namespace GTFS
     /// </summary>
     public class GTFSFeed : IGTFSFeed
     {
+        #region Protected Fields
+
+        /// <summary>
+        /// Holds the feedinfo.
+        /// </summary>
+        protected FeedInfo _feedInfo;
+
+        #endregion Protected Fields
+
+        #region Public Constructors
+
         /// <summary>
         /// Creates a new feed.
         /// </summary>
@@ -65,37 +75,9 @@ namespace GTFS
                 (e, id) => e.Id == id);
         }
 
-        /// <summary>
-        /// Holds the feedinfo.
-        /// </summary>
-        protected FeedInfo _feedInfo;
+        #endregion Public Constructors
 
-        /// <summary>
-        /// Sets the feed info.
-        /// </summary>
-        /// <param name="feedInfo"></param>
-        public void SetFeedInfo(FeedInfo feedInfo)
-        {
-            if (feedInfo != null)
-            {
-                _feedInfo.EndDate = feedInfo.EndDate;
-                _feedInfo.Lang = feedInfo.Lang;
-                _feedInfo.PublisherName = feedInfo.PublisherName;
-                _feedInfo.PublisherUrl = feedInfo.PublisherUrl;
-                _feedInfo.StartDate = feedInfo.StartDate;
-                _feedInfo.Version = feedInfo.Version;
-                _feedInfo.Tag = feedInfo.Tag;
-            }
-        }
-
-        /// <summary>
-        /// Gets the feed info.
-        /// </summary>
-        /// <returns></returns>
-        public FeedInfo GetFeedInfo()
-        {
-            return _feedInfo;
-        }
+        #region Public Properties
 
         /// <summary>
         /// Gets the collection of .
@@ -107,18 +89,18 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Gets the collection of calendars.
+        /// Gets the collection of calendar dates.
         /// </summary>
-        public IEntityCollection<Calendar> Calendars
+        public IEntityCollection<CalendarDate> CalendarDates
         {
             get;
             private set;
         }
 
         /// <summary>
-        /// Gets the collection of calendar dates.
+        /// Gets the collection of calendars.
         /// </summary>
-        public IEntityCollection<CalendarDate> CalendarDates
+        public IEntityCollection<Calendar> Calendars
         {
             get;
             private set;
@@ -146,6 +128,24 @@ namespace GTFS
         /// Gets the collection of frequencies.
         /// </summary>
         public IEntityCollection<Frequency> Frequencies
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the collection of levels.
+        /// </summary>
+        public IUniqueEntityCollection<Level> Levels
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the collection of pathways.
+        /// </summary>
+        public IUniqueEntityCollection<Pathway> Pathways
         {
             get;
             private set;
@@ -205,22 +205,37 @@ namespace GTFS
             private set;
         }
 
+        #endregion Public Properties
+
+        #region Public Methods
+
         /// <summary>
-        /// Gets the collection of levels.
+        /// Gets the feed info.
         /// </summary>
-        public IUniqueEntityCollection<Level> Levels
+        /// <returns></returns>
+        public FeedInfo GetFeedInfo()
         {
-            get;
-            private set;
+            return _feedInfo;
         }
 
         /// <summary>
-        /// Gets the collection of pathways.
+        /// Sets the feed info.
         /// </summary>
-        public IUniqueEntityCollection<Pathway> Pathways
+        /// <param name="feedInfo"></param>
+        public void SetFeedInfo(FeedInfo feedInfo)
         {
-            get;
-            private set;
+            if (feedInfo != null)
+            {
+                _feedInfo.EndDate = feedInfo.EndDate;
+                _feedInfo.Lang = feedInfo.Lang;
+                _feedInfo.PublisherName = feedInfo.PublisherName;
+                _feedInfo.PublisherUrl = feedInfo.PublisherUrl;
+                _feedInfo.StartDate = feedInfo.StartDate;
+                _feedInfo.Version = feedInfo.Version;
+                _feedInfo.Tag = feedInfo.Tag;
+            }
         }
+
+        #endregion Public Methods
     }
 }

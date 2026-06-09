@@ -9,6 +9,8 @@ namespace GTFS
     /// </summary>
     public static class GTFSWriterExtensions
     {
+        #region Public Methods
+
         /// <summary>
         /// Writes a GTFS feed.
         /// </summary>
@@ -18,7 +20,7 @@ namespace GTFS
         /// <typeparam name="T">The feed type.</typeparam>
         public static void Write<T>(this GTFSWriter<T> writer, T feed, string path) where T : IGTFSFeed, new()
         {
-            if (path == null) throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
 
             if (Directory.Exists(path))
             {
@@ -26,8 +28,10 @@ namespace GTFS
                 writer.Write(feed, target);
                 return;
             }
-            
+
             throw new ArgumentException("Could not write GTFS feed, directory not found.", nameof(path));
         }
+
+        #endregion Public Methods
     }
 }

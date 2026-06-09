@@ -22,7 +22,6 @@
 
 using GTFS.Entities;
 using GTFS.Entities.Collections;
-using System.Collections.Generic;
 
 namespace GTFS
 {
@@ -32,17 +31,7 @@ namespace GTFS
     /// <remarks>To be used as a proxy to load data into memory/a database/...</remarks>
     public interface IGTFSFeed
     {
-        /// <summary>
-        /// Adds new feed info.
-        /// </summary>
-        /// <param name="feedInfo"></param>
-        void SetFeedInfo(FeedInfo feedInfo);
-
-        /// <summary>
-        /// Gets the feed info.
-        /// </summary>
-        /// <returns></returns>
-        FeedInfo GetFeedInfo();
+        #region Public Properties
 
         /// <summary>
         /// Gets the collection of agencies.
@@ -53,17 +42,17 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Gets the collection of calendars.
+        /// Gets the collection of calendar dates.
         /// </summary>
-        IEntityCollection<Calendar> Calendars
+        IEntityCollection<CalendarDate> CalendarDates
         {
             get;
         }
 
         /// <summary>
-        /// Gets the collection of calendar dates.
+        /// Gets the collection of calendars.
         /// </summary>
-        IEntityCollection<CalendarDate> CalendarDates
+        IEntityCollection<Calendar> Calendars
         {
             get;
         }
@@ -93,6 +82,22 @@ namespace GTFS
         }
 
         /// <summary>
+        /// Gets the collection of levels.
+        /// </summary>
+        IUniqueEntityCollection<Level> Levels
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the collection of pathways.
+        /// </summary>
+        IUniqueEntityCollection<Pathway> Pathways
+        {
+            get;
+        }
+
+        /// <summary>
         /// Gets the collection of the routes.
         /// </summary>
         IUniqueEntityCollection<Route> Routes
@@ -107,7 +112,7 @@ namespace GTFS
         {
             get;
         }
-        
+
         /// <summary>
         /// Gets the collection of stops.
         /// </summary>
@@ -140,20 +145,22 @@ namespace GTFS
             get;
         }
 
-        /// <summary>
-        /// Gets the collection of levels.
-        /// </summary>
-        IUniqueEntityCollection<Level> Levels
-        {
-            get;
-        }
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
-        /// Gets the collection of pathways.
+        /// Gets the feed info.
         /// </summary>
-        IUniqueEntityCollection<Pathway> Pathways
-        {
-            get;
-        }
+        /// <returns></returns>
+        FeedInfo GetFeedInfo();
+
+        /// <summary>
+        /// Adds new feed info.
+        /// </summary>
+        /// <param name="feedInfo"></param>
+        void SetFeedInfo(FeedInfo feedInfo);
+
+        #endregion Public Methods
     }
 }
