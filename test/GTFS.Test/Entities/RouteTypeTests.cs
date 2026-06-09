@@ -31,6 +31,8 @@ namespace GTFS.Test.Entities
     [TestFixture]
     public class RouteTypeTests
     {
+        #region Public Methods
+
         [Test]
         public void TestTryToRouteType()
         {
@@ -40,20 +42,21 @@ namespace GTFS.Test.Entities
             Assert.That(routeType, Is.EqualTo(RouteType.Bus));
             Assert.That(RouteTypeExtended.CoachService.TryToRouteType(out routeType), Is.True);
             Assert.That(routeType, Is.EqualTo(RouteType.Bus));
-            
-            
+
             Assert.That(RouteTypeExtended.FerryService.TryToRouteType(out routeType), Is.True);
             Assert.That(routeType, Is.EqualTo(RouteType.Ferry));
-            
+
             Assert.That(RouteTypeExtended.TouristRailwayService.TryToRouteType(out routeType), Is.True);
             Assert.That(routeType, Is.EqualTo(RouteType.Rail));
             Assert.That(RouteTypeExtended.HighSpeedRailService.TryToRouteType(out routeType), Is.True);
             Assert.That(routeType, Is.EqualTo(RouteType.Rail));
-            
+
             Assert.That(RouteTypeExtended.MetroService.TryToRouteType(out routeType), Is.True);
             Assert.That(routeType, Is.EqualTo(RouteType.SubwayMetro));
             Assert.That(RouteTypeExtended.UrbanRailwayService.TryToRouteType(out routeType), Is.True);
             Assert.That(routeType, Is.EqualTo(RouteType.SubwayMetro));
         }
+
+        #endregion Public Methods
     }
 }

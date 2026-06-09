@@ -22,11 +22,6 @@
 
 using GTFS.StopsToShape;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GTFS.Test.StopsToShape
 {
@@ -36,6 +31,8 @@ namespace GTFS.Test.StopsToShape
     [TestFixture]
     public class StopAtShapesFinderTests
     {
+        #region Public Methods
+
         /// <summary>
         /// Tests matching stops to shapes in the sample-feed for trip AB1.
         /// </summary>
@@ -65,5 +62,7 @@ namespace GTFS.Test.StopsToShape
             Assert.That(stopAtShapes[1].StopOffset, Is.EqualTo(0));
             Assert.That(stopAtShapes[1].TripId, Is.EqualTo("AB1"));
         }
+
+        #endregion Public Methods
     }
 }

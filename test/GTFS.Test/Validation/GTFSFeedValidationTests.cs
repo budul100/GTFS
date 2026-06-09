@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
 using GTFS.Entities;
 using GTFS.Validation;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace GTFS.Test.Validation
 {
@@ -34,22 +34,7 @@ namespace GTFS.Test.Validation
     [TestFixture]
     public class GTFSFeedValidationTests
     {
-        /// <summary>
-        /// Tests a simple valid feed.
-        /// </summary>
-        [Test]
-        public void TestValidFeed()
-        {
-            // create the reader.
-            var reader = new GTFSReader<GTFSFeed>();
-            var source = GTFSAssert.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source);
-
-            // validate.
-            Assert.That(GTFSFeedValidation.Validate(feed), Is.True);
-        }
+        #region Public Methods
 
         /// <summary>
         /// Tests validation when agency is missing.
@@ -66,70 +51,6 @@ namespace GTFS.Test.Validation
 
             // remove.
             feed.Agencies.Remove("DTA");
-
-            // validate.
-            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
-        }
-
-        /// <summary>
-        /// Tests validation when agency is unknown.
-        /// </summary>
-        [Test]
-        public void TestUnknownAgency()
-        {
-            // create the reader.
-            var reader = new GTFSReader<GTFSFeed>();
-            var source = GTFSAssert.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source);
-
-            // change to an unknown agency.
-            const string UnknownAgency = "unknown agency";
-            Assert.That(feed.Agencies.All(x => x.Id != UnknownAgency), Is.True);
-            Assert.That(feed.Routes.Any(), Is.True);
-            feed.Routes.First().AgencyId = UnknownAgency;
-            
-            // validate.
-            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
-        }
-
-        /// <summary>
-        /// Tests validation when agency is null.
-        /// </summary>
-        [Test]
-        public void TestNullAgency()
-        {
-            // create the reader.
-            var reader = new GTFSReader<GTFSFeed>();
-            var source = GTFSAssert.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source);
-
-            // remove agency link.
-            Assert.That(feed.Routes.Any(), Is.True);
-            feed.Routes.First().AgencyId = null;
-
-            // validate.
-            Assert.That(GTFSFeedValidation.Validate(feed), Is.True);
-        }
-
-        /// <summary>
-        /// Tests validation when a stop is missing.
-        /// </summary>
-        [Test]
-        public void TestMissingStop()
-        {
-            // create the reader.
-            var reader = new GTFSReader<GTFSFeed>();
-            var source = GTFSAssert.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source);
-
-            // remove.
-            feed.Stops.Remove("BULLFROG");
 
             // validate.
             Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
@@ -156,10 +77,10 @@ namespace GTFS.Test.Validation
         }
 
         /// <summary>
-        /// Tests validation when a trip is missing.
+        /// Tests validation when a stop is missing.
         /// </summary>
         [Test]
-        public void TestMissingTrip()
+        public void TestMissingStop()
         {
             // create the reader.
             var reader = new GTFSReader<GTFSFeed>();
@@ -169,7 +90,7 @@ namespace GTFS.Test.Validation
             var feed = reader.Read(source);
 
             // remove.
-            feed.Trips.Remove("AB1");
+            feed.Stops.Remove("BULLFROG");
 
             // validate.
             Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
@@ -194,5 +115,88 @@ namespace GTFS.Test.Validation
             // validate.
             Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
         }
+
+        /// <summary>
+        /// Tests validation when a trip is missing.
+        /// </summary>
+        [Test]
+        public void TestMissingTrip()
+        {
+            // create the reader.
+            var reader = new GTFSReader<GTFSFeed>();
+            var source = GTFSAssert.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source);
+
+            // remove.
+            feed.Trips.Remove("AB1");
+
+            // validate.
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
+        }
+
+        /// <summary>
+        /// Tests validation when agency is null.
+        /// </summary>
+        [Test]
+        public void TestNullAgency()
+        {
+            // create the reader.
+            var reader = new GTFSReader<GTFSFeed>();
+            var source = GTFSAssert.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source);
+
+            // remove agency link.
+            Assert.That(feed.Routes.Count > 0, Is.True);
+            feed.Routes.First().AgencyId = null;
+
+            // validate.
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.True);
+        }
+
+        /// <summary>
+        /// Tests validation when agency is unknown.
+        /// </summary>
+        [Test]
+        public void TestUnknownAgency()
+        {
+            // create the reader.
+            var reader = new GTFSReader<GTFSFeed>();
+            var source = GTFSAssert.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source);
+
+            // change to an unknown agency.
+            const string UnknownAgency = "unknown agency";
+            Assert.That(feed.Agencies.All(x => x.Id != UnknownAgency), Is.True);
+            Assert.That(feed.Routes.Count > 0, Is.True);
+            feed.Routes.First().AgencyId = UnknownAgency;
+
+            // validate.
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.False);
+        }
+
+        /// <summary>
+        /// Tests a simple valid feed.
+        /// </summary>
+        [Test]
+        public void TestValidFeed()
+        {
+            // create the reader.
+            var reader = new GTFSReader<GTFSFeed>();
+            var source = GTFSAssert.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source);
+
+            // validate.
+            Assert.That(GTFSFeedValidation.Validate(feed), Is.True);
+        }
+
+        #endregion Public Methods
     }
 }

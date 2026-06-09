@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using GTFS.IO;
-using GTFS.IO.CSV;
-using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using GTFS.Exceptions;
+using GTFS.IO;
+using GTFS.IO.CSV;
+using NUnit.Framework;
 
 namespace GTFS.Test
 {
@@ -35,6 +36,8 @@ namespace GTFS.Test
     [TestFixture]
     public class ParseFeedTests
     {
+        #region Public Methods
+
         /// <summary>
         /// Tests parsing feed with all required files.
         /// </summary>
@@ -57,10 +60,10 @@ namespace GTFS.Test
         }
 
         /// <summary>
-        /// Tests parsing feed with stop-times file missing.
+        /// Tests parsing feed with both calendar and calendar_dates file missing.
         /// </summary>
         [Test]
-        public void ParseFeedWithStopTimesFileMissing()
+        public void ParseFeedWithBothCalendarFileMissing()
         {
             var reader = new GTFSReader<GTFSFeed>(true);
             var source = new List<IGTFSSourceFile>
@@ -69,12 +72,15 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"),"stops"),
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"),"routes"),
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"),"trips"),
-                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"),"calendar")
+                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"),"stop_times"),
             };
 
-            Assert.Throws<GTFSRequiredFileMissingException>(
-                new TestDelegate(() => { reader.Read(source); }),
-                GTFSRequiredFileMissingException.MessageFormat, "stop_times");
+            void readAction() => reader.Read(source);
+            string expectedMessage = string.Format(GTFSRequiredFileSetMissingException.MessageFormat, string.Join(",", "calendar", "calendar_dates"));
+
+            Assert.That(
+                (Action)readAction,
+                Throws.TypeOf<GTFSRequiredFileSetMissingException>().With.Message.EqualTo(expectedMessage));
         }
 
         /// <summary>
@@ -99,10 +105,10 @@ namespace GTFS.Test
         }
 
         /// <summary>
-        /// Tests parsing feed with both calendar and calendar_dates file missing.
+        /// Tests parsing feed with stop-times file missing.
         /// </summary>
         [Test]
-        public void ParseFeedWithBothCalendarFileMissing()
+        public void ParseFeedWithStopTimesFileMissing()
         {
             var reader = new GTFSReader<GTFSFeed>(true);
             var source = new List<IGTFSSourceFile>
@@ -111,12 +117,17 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"),"stops"),
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"),"routes"),
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"),"trips"),
-                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"),"stop_times"),
+                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"),"calendar")
             };
 
-            Assert.Throws<GTFSRequiredFileSetMissingException>(
-                new TestDelegate(() => { reader.Read(source); }),
-                GTFSRequiredFileSetMissingException.MessageFormat, "calendar", "calendar_dates");
+            void readAction() => reader.Read(source);
+            string expectedMessage = string.Format(GTFSRequiredFileMissingException.MessageFormat, "stop_times");
+
+            Assert.That(
+                (Action)readAction,
+                Throws.TypeOf<GTFSRequiredFileMissingException>().With.Message.EqualTo(expectedMessage));
         }
+
+        #endregion Public Methods
     }
 }

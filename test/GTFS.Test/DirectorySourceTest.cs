@@ -20,16 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using GTFS.Entities;
 using GTFS.Entities.Enumerations;
 using GTFS.IO;
 using GTFS.IO.CSV;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace GTFS.Test
 {
@@ -39,37 +38,7 @@ namespace GTFS.Test
     [TestFixture]
     public class DirectorySourceTest
     {
-        /// <summary>
-        /// Builds the source from embedded streams.
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerable<IGTFSSourceFile> BuildSource()
-        {
-            var source = new List<IGTFSSourceFile>();
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"), "agency"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"), "calendar"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar_dates.txt"), "calendar_dates"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_attributes.txt"), "fare_attributes"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_rules.txt"), "fare_rules"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.frequencies.txt"), "frequencies"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"), "routes"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.shapes.txt"), "shapes"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"), "stop_times"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"), "stops"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"), "trips"));
-            return source;
-        }
+        #region Public Methods
 
         /// <summary>
         /// Tests parsing agencies.
@@ -97,6 +66,221 @@ namespace GTFS.Test
             Assert.That(agencies[0].Phone, Is.Null);
             Assert.That(agencies[0].Timezone, Is.EqualTo("America/Los_Angeles"));
             Assert.That(agencies[0].URL, Is.EqualTo("http://google.com"));
+        }
+
+        /// <summary>
+        /// Tests parsing calendar dates.
+        /// </summary>
+        [Test]
+        public void ParseCalendarDates()
+        {
+            // create the reader.
+            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>();
+
+            // build the source
+            var source = this.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source, source.First(x => x.Name.Equals("calendar_dates")));
+
+            // test result.
+            Assert.That(feed.CalendarDates, Is.Not.Null);
+            var calendarDates = new List<CalendarDate>(feed.CalendarDates);
+            Assert.That(calendarDates.Count, Is.EqualTo(1));
+
+            // @ 1: service_id,date,exception_type
+            // @ 2: FULLW,20070604,2
+            int idx = 0;
+            Assert.That(calendarDates[idx].ServiceId, Is.EqualTo("FULLW"));
+            Assert.That(calendarDates[idx].Date, Is.EqualTo(new System.DateTime(2007, 06, 04)));
+            Assert.That(calendarDates[idx].ExceptionType, Is.EqualTo(ExceptionType.Removed));
+        }
+
+        /// <summary>
+        /// Tests parsing calendars.
+        /// </summary>
+        [Test]
+        public void ParseCalendars()
+        {
+            // create the reader.
+            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>();
+
+            // build the source
+            var source = this.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source, source.First(x => x.Name.Equals("calendar")));
+
+            // test result.
+            Assert.That(feed.Calendars, Is.Not.Null);
+            var calendars = feed.Calendars.ToList();
+            Assert.That(calendars.Count, Is.EqualTo(2));
+
+            // @ 1: service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
+            // @ 2: FULLW,1,1,1,1,1,1,1,20070101,20101231
+            int idx = 0;
+            Assert.That(calendars[idx].ServiceId, Is.EqualTo("FULLW"));
+            Assert.That(calendars[idx].Monday, Is.True);
+            Assert.That(calendars[idx].Tuesday, Is.True);
+            Assert.That(calendars[idx].Wednesday, Is.True);
+            Assert.That(calendars[idx].Thursday, Is.True);
+            Assert.That(calendars[idx].Friday, Is.True);
+            Assert.That(calendars[idx].Saturday, Is.True);
+            Assert.That(calendars[idx].Sunday, Is.True);
+            Assert.That(calendars[idx].StartDate, Is.EqualTo(new DateTime(2007, 01, 01)));
+            Assert.That(calendars[idx].EndDate, Is.EqualTo(new DateTime(2010, 12, 31)));
+
+            // @3: WE,0,0,0,0,0,1,1,20070101,20101231
+            idx = 1;
+            Assert.That(calendars[idx].ServiceId, Is.EqualTo("WE"));
+            Assert.That(calendars[idx].Monday, Is.False);
+            Assert.That(calendars[idx].Tuesday, Is.False);
+            Assert.That(calendars[idx].Wednesday, Is.False);
+            Assert.That(calendars[idx].Thursday, Is.False);
+            Assert.That(calendars[idx].Friday, Is.False);
+            Assert.That(calendars[idx].Saturday, Is.True);
+            Assert.That(calendars[idx].Sunday, Is.True);
+            Assert.That(calendars[idx].StartDate, Is.EqualTo(new DateTime(2007, 01, 01)));
+            Assert.That(calendars[idx].EndDate, Is.EqualTo(new DateTime(2010, 12, 31)));
+        }
+
+        /// <summary>
+        /// Tests parsing routes.
+        /// </summary>
+        [Test]
+        public void ParseFareAttributes()
+        {
+            // create the reader.
+            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>();
+
+            // build the source
+            var source = this.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source, source.First(x => x.Name.Equals("fare_attributes")));
+
+            // test result.
+            Assert.That(feed.FareAttributes, Is.Not.Null);
+
+            var fareAttributes = feed.FareAttributes.ToList();
+            Assert.That(fareAttributes.Count, Is.EqualTo(2));
+
+            //fare_id,price,currency_type,payment_method,transfers,transfer_duration
+
+            //p,1.25,USD,0,0,
+            int idx = 0;
+            Assert.That(fareAttributes[idx].FareId, Is.EqualTo("p"));
+            Assert.That(fareAttributes[idx].Price, Is.EqualTo("1.25"));
+            Assert.That(fareAttributes[idx].CurrencyType, Is.EqualTo("USD"));
+            Assert.That(fareAttributes[idx].PaymentMethod, Is.EqualTo(PaymentMethodType.OnBoard));
+            Assert.That(fareAttributes[idx].Transfers, Is.EqualTo(0));
+            Assert.That(fareAttributes[idx].TransferDuration, Is.EqualTo(string.Empty));
+
+            //a,5.25,USD,0,0,
+            idx = 1;
+            Assert.That(fareAttributes[idx].FareId, Is.EqualTo("a"));
+            Assert.That(fareAttributes[idx].Price, Is.EqualTo("5.25"));
+            Assert.That(fareAttributes[idx].CurrencyType, Is.EqualTo("USD"));
+            Assert.That(fareAttributes[idx].PaymentMethod, Is.EqualTo(PaymentMethodType.OnBoard));
+            Assert.That(fareAttributes[idx].Transfers, Is.EqualTo(0));
+            Assert.That(fareAttributes[idx].TransferDuration, Is.EqualTo(string.Empty));
+        }
+
+        /// <summary>
+        /// Tests parsing routes.
+        /// </summary>
+        [Test]
+        public void ParseFareRules()
+        {
+            // create the reader.
+            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>();
+
+            // build the source
+            var source = this.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source, source.First(x => x.Name.Equals("fare_rules")));
+
+            // test result.
+            Assert.That(feed.FareRules, Is.Not.Null);
+
+            var fareRules = feed.FareRules.ToList();
+            Assert.That(fareRules.Count, Is.EqualTo(4));
+
+            // fare_id,route_id,origin_id,destination_id,contains_id
+
+            //p,AB,,,
+            int idx = 0;
+            Assert.That(fareRules[idx].RouteId, Is.EqualTo("AB"));
+            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
+            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
+
+            //p,STBA,,,
+            idx = 1;
+            Assert.That(fareRules[idx].RouteId, Is.EqualTo("STBA"));
+            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
+            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
+
+            //p,BFC,,,
+            idx = 2;
+            Assert.That(fareRules[idx].RouteId, Is.EqualTo("BFC"));
+            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
+            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
+
+            //a,AAMV,,,
+            idx = 3;
+            Assert.That(fareRules[idx].RouteId, Is.EqualTo("AAMV"));
+            Assert.That(fareRules[idx].FareId, Is.EqualTo("a"));
+            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
+        }
+
+        /// <summary>
+        /// Tests parsing frequencies.
+        /// </summary>
+        [Test]
+        public void ParseFrequencies()
+        {
+            // create the reader.
+            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>(false);
+
+            // build the source
+            var source = this.BuildSource();
+
+            // execute the reader.
+            var feed = reader.Read(source, source.First(x => x.Name.Equals("frequencies")));
+
+            // test result.
+            Assert.That(feed.Frequencies, Is.Not.Null);
+            var frequencies = feed.Frequencies.ToList();
+            Assert.That(frequencies.Count, Is.EqualTo(11));
+
+            // @ 1: trip_id,start_time,end_time,headway_secs
+            // @ 2: STBA,6:00:00,22:00:00,1800
+
+            // @ 1: route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id
+            // @ 2: AB,FULLW,AB1,to Bullfrog,0,1,shape_1
+            int idx = 0;
+            Assert.That(frequencies[idx].TripId, Is.EqualTo("STBA"));
+            Assert.That(frequencies[idx].StartTime, Is.EqualTo("6:00:00"));
+            Assert.That(frequencies[idx].EndTime, Is.EqualTo("22:00:00"));
+            Assert.That(frequencies[idx].HeadwaySecs, Is.EqualTo("1800"));
+            Assert.That(frequencies[idx].ExactTimes, Is.Null);
+
+            // @ 10: CITY2,16:00:00,18:59:59,600
+            idx = 8;
+            Assert.That(frequencies[idx].TripId, Is.EqualTo("CITY2"));
+            Assert.That(frequencies[idx].StartTime, Is.EqualTo("16:00:00"));
+            Assert.That(frequencies[idx].EndTime, Is.EqualTo("18:59:59"));
+            Assert.That(frequencies[idx].HeadwaySecs, Is.EqualTo("600"));
+            Assert.That(frequencies[idx].ExactTimes, Is.Null);
         }
 
         /// <summary>
@@ -216,58 +400,6 @@ namespace GTFS.Test
         }
 
         /// <summary>
-        /// Tests parsing trips.
-        /// </summary>
-        [Test]
-        public void ParseTrips()
-        {
-            // create the reader.
-            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>(false);
-
-            // build the source
-            var source = this.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source, source.First(x => x.Name.Equals("trips")));
-
-            // test result.
-            Assert.That(feed.Trips, Is.Not.Null);
-            var trips = feed.Trips.ToList();
-            Assert.That(trips.Count, Is.EqualTo(11));
-
-            // @ 1: route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id
-            // @ 2: AB,FULLW,AB1,to Bullfrog,0,1,shape_1
-            int idx = 0;
-            Assert.That(trips[idx].RouteId, Is.EqualTo("AB"));
-            Assert.That(trips[idx].ServiceId, Is.EqualTo("FULLW"));
-            Assert.That(trips[idx].Id, Is.EqualTo("AB1"));
-            Assert.That(trips[idx].Headsign, Is.EqualTo("to Bullfrog"));
-            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OneDirection));
-            Assert.That(trips[idx].BlockId, Is.EqualTo("1"));
-            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_1"));
-
-            // @ 10: BFC,FULLW,BFC1,to Furnace Creek Resort,0,1,shape_6
-            idx = 5;
-            Assert.That(trips[idx].RouteId, Is.EqualTo("BFC"));
-            Assert.That(trips[idx].ServiceId, Is.EqualTo("FULLW"));
-            Assert.That(trips[idx].Id, Is.EqualTo("BFC1"));
-            Assert.That(trips[idx].Headsign, Is.EqualTo("to Furnace Creek Resort"));
-            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OneDirection));
-            Assert.That(trips[idx].BlockId, Is.EqualTo("1"));
-            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_6"));
-
-            // AAMV,WE,AAMV4,"""to Airport""",1,,shape_11
-            idx = 10;
-            Assert.That(trips[idx].RouteId, Is.EqualTo("AAMV"));
-            Assert.That(trips[idx].ServiceId, Is.EqualTo("WE"));
-            Assert.That(trips[idx].Id, Is.EqualTo("AAMV4"));
-            Assert.That(trips[idx].Headsign, Is.EqualTo("\"to Airport\""));
-            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OppositeDirection));
-            Assert.That(trips[idx].BlockId, Is.EqualTo(""));
-            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_11"));
-        }
-
-        /// <summary>
         /// Tests parsing stops.
         /// </summary>
         [Test]
@@ -382,10 +514,10 @@ namespace GTFS.Test
         }
 
         /// <summary>
-        /// Tests parsing frequencies.
+        /// Tests parsing trips.
         /// </summary>
         [Test]
-        public void ParseFrequencies()
+        public void ParseTrips()
         {
             // create the reader.
             GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>(false);
@@ -394,206 +526,83 @@ namespace GTFS.Test
             var source = this.BuildSource();
 
             // execute the reader.
-            var feed = reader.Read(source, source.First(x => x.Name.Equals("frequencies")));
+            var feed = reader.Read(source, source.First(x => x.Name.Equals("trips")));
 
             // test result.
-            Assert.That(feed.Frequencies, Is.Not.Null);
-            var frequencies = feed.Frequencies.ToList();
-            Assert.That(frequencies.Count, Is.EqualTo(11));
-
-            // @ 1: trip_id,start_time,end_time,headway_secs
-            // @ 2: STBA,6:00:00,22:00:00,1800
+            Assert.That(feed.Trips, Is.Not.Null);
+            var trips = feed.Trips.ToList();
+            Assert.That(trips.Count, Is.EqualTo(11));
 
             // @ 1: route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id
             // @ 2: AB,FULLW,AB1,to Bullfrog,0,1,shape_1
             int idx = 0;
-            Assert.That(frequencies[idx].TripId, Is.EqualTo("STBA"));
-            Assert.That(frequencies[idx].StartTime, Is.EqualTo("6:00:00"));
-            Assert.That(frequencies[idx].EndTime, Is.EqualTo("22:00:00"));
-            Assert.That(frequencies[idx].HeadwaySecs, Is.EqualTo("1800"));
-            Assert.That(frequencies[idx].ExactTimes, Is.Null);
+            Assert.That(trips[idx].RouteId, Is.EqualTo("AB"));
+            Assert.That(trips[idx].ServiceId, Is.EqualTo("FULLW"));
+            Assert.That(trips[idx].Id, Is.EqualTo("AB1"));
+            Assert.That(trips[idx].Headsign, Is.EqualTo("to Bullfrog"));
+            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OneDirection));
+            Assert.That(trips[idx].BlockId, Is.EqualTo("1"));
+            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_1"));
 
-            // @ 10: CITY2,16:00:00,18:59:59,600
-            idx = 8;
-            Assert.That(frequencies[idx].TripId, Is.EqualTo("CITY2"));
-            Assert.That(frequencies[idx].StartTime, Is.EqualTo("16:00:00"));
-            Assert.That(frequencies[idx].EndTime, Is.EqualTo("18:59:59"));
-            Assert.That(frequencies[idx].HeadwaySecs, Is.EqualTo("600"));
-            Assert.That(frequencies[idx].ExactTimes, Is.Null);
+            // @ 10: BFC,FULLW,BFC1,to Furnace Creek Resort,0,1,shape_6
+            idx = 5;
+            Assert.That(trips[idx].RouteId, Is.EqualTo("BFC"));
+            Assert.That(trips[idx].ServiceId, Is.EqualTo("FULLW"));
+            Assert.That(trips[idx].Id, Is.EqualTo("BFC1"));
+            Assert.That(trips[idx].Headsign, Is.EqualTo("to Furnace Creek Resort"));
+            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OneDirection));
+            Assert.That(trips[idx].BlockId, Is.EqualTo("1"));
+            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_6"));
+
+            // AAMV,WE,AAMV4,"""to Airport""",1,,shape_11
+            idx = 10;
+            Assert.That(trips[idx].RouteId, Is.EqualTo("AAMV"));
+            Assert.That(trips[idx].ServiceId, Is.EqualTo("WE"));
+            Assert.That(trips[idx].Id, Is.EqualTo("AAMV4"));
+            Assert.That(trips[idx].Headsign, Is.EqualTo("\"to Airport\""));
+            Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OppositeDirection));
+            Assert.That(trips[idx].BlockId, Is.EqualTo(""));
+            Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_11"));
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         /// <summary>
-        /// Tests parsing calendars.
+        /// Builds the source from embedded streams.
         /// </summary>
-        [Test]
-        public void ParseCalendars()
+        /// <returns></returns>
+        private IEnumerable<IGTFSSourceFile> BuildSource()
         {
-            // create the reader.
-            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>();
-
-            // build the source
-            var source = this.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source, source.First(x => x.Name.Equals("calendar")));
-
-            // test result.
-            Assert.That(feed.Calendars, Is.Not.Null);
-            var calendars = feed.Calendars.ToList();
-            Assert.That(calendars.Count, Is.EqualTo(2));
-
-            // @ 1: service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
-            // @ 2: FULLW,1,1,1,1,1,1,1,20070101,20101231
-            int idx = 0;
-            Assert.That(calendars[idx].ServiceId, Is.EqualTo("FULLW"));
-            Assert.That(calendars[idx].Monday, Is.True);
-            Assert.That(calendars[idx].Tuesday, Is.True);
-            Assert.That(calendars[idx].Wednesday, Is.True);
-            Assert.That(calendars[idx].Thursday, Is.True);
-            Assert.That(calendars[idx].Friday, Is.True);
-            Assert.That(calendars[idx].Saturday, Is.True);
-            Assert.That(calendars[idx].Sunday, Is.True);
-            Assert.That(calendars[idx].StartDate, Is.EqualTo(new DateTime(2007, 01, 01)));
-            Assert.That(calendars[idx].EndDate, Is.EqualTo(new DateTime(2010, 12, 31)));
-
-            // @3: WE,0,0,0,0,0,1,1,20070101,20101231
-            idx = 1;
-            Assert.That(calendars[idx].ServiceId, Is.EqualTo("WE"));
-            Assert.That(calendars[idx].Monday, Is.False);
-            Assert.That(calendars[idx].Tuesday, Is.False);
-            Assert.That(calendars[idx].Wednesday, Is.False);
-            Assert.That(calendars[idx].Thursday, Is.False);
-            Assert.That(calendars[idx].Friday, Is.False);
-            Assert.That(calendars[idx].Saturday, Is.True);
-            Assert.That(calendars[idx].Sunday, Is.True);
-            Assert.That(calendars[idx].StartDate, Is.EqualTo(new DateTime(2007, 01, 01)));
-            Assert.That(calendars[idx].EndDate, Is.EqualTo(new DateTime(2010, 12, 31)));
+            var source = new List<IGTFSSourceFile>
+            {
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"), "agency"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"), "calendar"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar_dates.txt"), "calendar_dates"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_attributes.txt"), "fare_attributes"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_rules.txt"), "fare_rules"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.frequencies.txt"), "frequencies"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"), "routes"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.shapes.txt"), "shapes"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"), "stop_times"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"), "stops"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"), "trips")
+            };
+            return source;
         }
 
-        /// <summary>
-        /// Tests parsing calendar dates.
-        /// </summary>
-        [Test]
-        public void ParseCalendarDates()
-        {
-            // create the reader.
-            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>();
-
-            // build the source
-            var source = this.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source, source.First(x => x.Name.Equals("calendar_dates")));
-
-            // test result.
-            Assert.That(feed.CalendarDates, Is.Not.Null);
-            var calendarDates = new List<CalendarDate>(feed.CalendarDates);
-            Assert.That(calendarDates.Count, Is.EqualTo(1));
-
-            // @ 1: service_id,date,exception_type
-            // @ 2: FULLW,20070604,2
-            int idx = 0;
-            Assert.That(calendarDates[idx].ServiceId, Is.EqualTo("FULLW"));
-            Assert.That(calendarDates[idx].Date, Is.EqualTo(new System.DateTime(2007, 06, 04)));
-            Assert.That(calendarDates[idx].ExceptionType, Is.EqualTo(ExceptionType.Removed));
-        }
-
-        /// <summary>
-        /// Tests parsing routes.
-        /// </summary>
-        [Test]
-        public void ParseFareRules()
-        {
-            // create the reader.
-            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>();
-
-            // build the source
-            var source = this.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source, source.First(x => x.Name.Equals("fare_rules")));
-
-            // test result.
-            Assert.That(feed.FareRules, Is.Not.Null);
-
-            var fareRules = feed.FareRules.ToList();
-            Assert.That(fareRules.Count, Is.EqualTo(4));
-
-            // fare_id,route_id,origin_id,destination_id,contains_id
-
-            //p,AB,,,
-            int idx = 0;
-            Assert.That(fareRules[idx].RouteId, Is.EqualTo("AB"));
-            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
-            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
-
-            //p,STBA,,,
-            idx = 1;
-            Assert.That(fareRules[idx].RouteId, Is.EqualTo("STBA"));
-            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
-            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
-
-            //p,BFC,,,
-            idx = 2;
-            Assert.That(fareRules[idx].RouteId, Is.EqualTo("BFC"));
-            Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
-            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
-
-            //a,AAMV,,,
-            idx = 3;
-            Assert.That(fareRules[idx].RouteId, Is.EqualTo("AAMV"));
-            Assert.That(fareRules[idx].FareId, Is.EqualTo("a"));
-            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
-        }
-
-        /// <summary>
-        /// Tests parsing routes.
-        /// </summary>
-        [Test]
-        public void ParseFareAttributes()
-        {
-            // create the reader.
-            GTFSReader<GTFSFeed> reader = new GTFSReader<GTFSFeed>();
-
-            // build the source
-            var source = this.BuildSource();
-
-            // execute the reader.
-            var feed = reader.Read(source, source.First(x => x.Name.Equals("fare_attributes")));
-
-            // test result.
-            Assert.That(feed.FareAttributes, Is.Not.Null);
-
-            var fareAttributes = feed.FareAttributes.ToList();
-            Assert.That(fareAttributes.Count, Is.EqualTo(2));
-
-            //fare_id,price,currency_type,payment_method,transfers,transfer_duration
-
-            //p,1.25,USD,0,0,
-            int idx = 0;
-            Assert.That(fareAttributes[idx].FareId, Is.EqualTo("p"));
-            Assert.That(fareAttributes[idx].Price, Is.EqualTo("1.25"));
-            Assert.That(fareAttributes[idx].CurrencyType, Is.EqualTo("USD"));
-            Assert.That(fareAttributes[idx].PaymentMethod, Is.EqualTo(PaymentMethodType.OnBoard));
-            Assert.That(fareAttributes[idx].Transfers, Is.EqualTo(0));
-            Assert.That(fareAttributes[idx].TransferDuration, Is.EqualTo(string.Empty));
-
-            //a,5.25,USD,0,0,
-            idx = 1;
-            Assert.That(fareAttributes[idx].FareId, Is.EqualTo("a"));
-            Assert.That(fareAttributes[idx].Price, Is.EqualTo("5.25"));
-            Assert.That(fareAttributes[idx].CurrencyType, Is.EqualTo("USD"));
-            Assert.That(fareAttributes[idx].PaymentMethod, Is.EqualTo(PaymentMethodType.OnBoard));
-            Assert.That(fareAttributes[idx].Transfers, Is.EqualTo(0));
-            Assert.That(fareAttributes[idx].TransferDuration, Is.EqualTo(string.Empty));
-        }
+        #endregion Private Methods
     }
 }

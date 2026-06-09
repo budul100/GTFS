@@ -20,13 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using GTFS.IO;
-using GTFS.IO.CSV;
-using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GTFS.Exceptions;
+using GTFS.IO;
+using GTFS.IO.CSV;
+using NUnit.Framework;
 
 namespace GTFS.Test
 {
@@ -36,7 +37,13 @@ namespace GTFS.Test
     [TestFixture]
     public class ParseAgenciesTests
     {
+        #region Private Fields
+
         private static Assembly _executingAssembly;
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         /// <summary>
         /// Setup the test environment.
@@ -45,54 +52,6 @@ namespace GTFS.Test
         public static void Setup()
         {
             _executingAssembly = Assembly.GetExecutingAssembly();
-        }
-
-        /// <summary>
-        /// Tests parsing single agency without agency_id.
-        /// </summary>
-        [Test]
-        public void ParseSingleAgencyWithoutAgencyId()
-        {
-            var reader = new GTFSReader<GTFSFeed>();
-            var source = new List<IGTFSSourceFile>
-            {
-                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agency_no_id.txt"),"agency")
-            };
-
-
-            var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
-
-
-            var agencies = feed.Agencies;
-            Assert.That(agencies, Is.Not.Null);
-
-            var agency = agencies.SingleOrDefault();
-            Assert.That(agency, Is.Not.Null);
-            Assert.That(agency.Id, Is.Null);
-        }
-
-        /// <summary>
-        /// Tests parsing single agency with agency_id.
-        /// </summary>
-        [Test]
-        public void ParseSingleAgencyWithAgencyId()
-        {
-            var reader = new GTFSReader<GTFSFeed>();
-            var source = new List<IGTFSSourceFile>
-            {
-                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agency_with_id.txt"),"agency")
-            };
-
-
-            var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
-
-
-            var agencies = feed.Agencies;
-            Assert.That(agencies, Is.Not.Null);
-
-            var agency = agencies.SingleOrDefault();
-            Assert.That(agency, Is.Not.Null);
-            Assert.That(agency.Id, Is.Not.Null);
         }
 
         /// <summary>
@@ -107,9 +66,7 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agencies_with_id.txt"),"agency")
             };
 
-
             var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
-
 
             var agencies = feed.Agencies;
             Assert.That(agencies, Is.Not.Null);
@@ -129,13 +86,36 @@ namespace GTFS.Test
             {
                 new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agencies_no_id.txt"),Agency)
             };
-            
-            Assert.Throws<GTFSRequiredFieldMissingException>(
-                new TestDelegate(() =>
-                {
-                    reader.Read(source, source.First(x => x.Name.Equals(Agency)));
-                }),
-                GTFSRequiredFieldMissingException.MessageFormat, "agency_id", Agency);
+
+            void readAction() => reader.Read(source, source.First(x => x.Name.Equals(Agency)));
+
+            string expectedMessage = string.Format(GTFSRequiredFieldMissingException.MessageFormat, "agency_id", Agency);
+
+            Assert.That(
+                (Action)readAction,
+                Throws.TypeOf<GTFSRequiredFieldMissingException>().With.Message.EqualTo(expectedMessage));
+        }
+
+        /// <summary>
+        /// Tests parsing single agency with agency_id.
+        /// </summary>
+        [Test]
+        public void ParseSingleAgencyWithAgencyId()
+        {
+            var reader = new GTFSReader<GTFSFeed>();
+            var source = new List<IGTFSSourceFile>
+            {
+                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agency_with_id.txt"),"agency")
+            };
+
+            var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
+
+            var agencies = feed.Agencies;
+            Assert.That(agencies, Is.Not.Null);
+
+            var agency = agencies.SingleOrDefault();
+            Assert.That(agency, Is.Not.Null);
+            Assert.That(agency.Id, Is.Not.Null);
         }
 
         /// <summary>
@@ -150,9 +130,7 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agency_with_email.txt"),"agency")
             };
 
-
             var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
-
 
             var agencies = feed.Agencies;
             Assert.That(agencies, Is.Not.Null);
@@ -161,5 +139,29 @@ namespace GTFS.Test
             Assert.That(agency, Is.Not.Null);
             Assert.That(agency.Email, Is.EqualTo("support@demotransit.com"));
         }
+
+        /// <summary>
+        /// Tests parsing single agency without agency_id.
+        /// </summary>
+        [Test]
+        public void ParseSingleAgencyWithoutAgencyId()
+        {
+            var reader = new GTFSReader<GTFSFeed>();
+            var source = new List<IGTFSSourceFile>
+            {
+                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agency_no_id.txt"),"agency")
+            };
+
+            var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
+
+            var agencies = feed.Agencies;
+            Assert.That(agencies, Is.Not.Null);
+
+            var agency = agencies.SingleOrDefault();
+            Assert.That(agency, Is.Not.Null);
+            Assert.That(agency.Id, Is.Null);
+        }
+
+        #endregion Public Methods
     }
 }

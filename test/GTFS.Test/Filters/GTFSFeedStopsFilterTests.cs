@@ -33,6 +33,8 @@ namespace GTFS.Test.Filters
     [TestFixture]
     public class GTFSFeedStopsFilterTests
     {
+        #region Public Methods
+
         /// <summary>
         /// Tests filtering no stops.
         /// </summary>
@@ -106,8 +108,10 @@ namespace GTFS.Test.Filters
             }
 
             // create the filter.
-            var stopIds = new HashSet<string>();
-            stopIds.Add("BULLFROG");
+            var stopIds = new HashSet<string>
+            {
+                "BULLFROG"
+            };
             filter = new GTFSFeedStopsFilter(stopIds);
 
             // execute filter.
@@ -132,5 +136,7 @@ namespace GTFS.Test.Filters
                 Assert.That(expectedShapeIds, Does.Contain(shape.Id));
             }
         }
+
+        #endregion Public Methods
     }
 }

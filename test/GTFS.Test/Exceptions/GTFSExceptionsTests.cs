@@ -31,9 +31,10 @@ namespace GTFS.Test.Exceptions
     /// Contains tests for <see cref="GTFSExceptionBase"/>.
     /// </summary>
     [TestFixture]
-    // ReSharper disable once InconsistentNaming
     public class GTFSExceptionsTests
     {
+        #region Public Methods
+
         /// <summary>
         /// Tests all exceptions derive from our base.
         /// </summary>
@@ -49,7 +50,9 @@ namespace GTFS.Test.Exceptions
                 .ToArray();
 
             // test result.
-            Assert.That(customExceptions.All(x => baseException.IsAssignableFrom(x)), Is.True);
+            Assert.That(customExceptions.All(baseException.IsAssignableFrom), Is.True);
         }
+
+        #endregion Public Methods
     }
 }

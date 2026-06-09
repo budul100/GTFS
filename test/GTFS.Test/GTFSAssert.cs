@@ -20,15 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using GTFS.Entities;
 using GTFS.IO;
 using GTFS.IO.CSV;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace GTFS.Test
 {
@@ -37,37 +36,7 @@ namespace GTFS.Test
     /// </summary>
     public static class GTFSAssert
     {
-        /// <summary>
-        /// Builds the source from embedded streams.
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<IGTFSSourceFile> BuildSource()
-        {
-            var source = new List<IGTFSSourceFile>();
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"), "agency"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"), "calendar"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar_dates.txt"), "calendar_dates"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_attributes.txt"), "fare_attributes"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_rules.txt"), "fare_rules"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.frequencies.txt"), "frequencies"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"), "routes"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.shapes.txt"), "shapes"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"), "stop_times"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"), "stops"));
-            source.Add(new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"), "trips"));
-            return source;
-        }
+        #region Public Methods
 
         /// <summary>
         /// Compares two feeds.
@@ -81,31 +50,31 @@ namespace GTFS.Test
 
             // compare agencies.
             GTFSAssert.AreEqual<Agency>(actual.Agencies, expected.Agencies,
-                (x, y) => x.Id == y.Id, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.Id == y.Id, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<CalendarDate>(actual.CalendarDates, expected.CalendarDates,
-                (x, y) => x.ServiceId == y.ServiceId && x.Date == y.Date && x.ExceptionType == y.ExceptionType, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.ServiceId == y.ServiceId && x.Date == y.Date && x.ExceptionType == y.ExceptionType, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<Calendar>(actual.Calendars, expected.Calendars,
-                (x, y) => x.ToString() == y.ToString(), (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.ToString() == y.ToString(), GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<FareAttribute>(actual.FareAttributes, expected.FareAttributes,
-                (x, y) => x.FareId == y.FareId, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.FareId == y.FareId, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<FareRule>(actual.FareRules, expected.FareRules,
                 (x, y) => x.ContainsId == y.ContainsId && x.DestinationId == y.DestinationId &&
-                    x.FareId == y.FareId && x.OriginId == y.OriginId && x.RouteId == y.RouteId, 
-                    (x, y) => GTFSAssert.AreEqual(x, y));
+                    x.FareId == y.FareId && x.OriginId == y.OriginId && x.RouteId == y.RouteId,
+                    GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<Frequency>(actual.Frequencies, expected.Frequencies,
-                (x, y) => x.TripId == y.TripId && x.StartTime == y.StartTime, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.TripId == y.TripId && x.StartTime == y.StartTime, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<Route>(actual.Routes, expected.Routes,
-                (x, y) => x.Id == y.Id, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.Id == y.Id, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<Shape>(actual.Shapes, expected.Shapes,
-                (x, y) => x.Id == y.Id && x.Sequence == y.Sequence, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.Id == y.Id && x.Sequence == y.Sequence, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<Stop>(actual.Stops, expected.Stops,
-                (x, y) => x.Id == y.Id, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.Id == y.Id, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<StopTime>(actual.StopTimes, expected.StopTimes,
-                (x, y) => x.TripId == y.TripId && x.StopId == y.StopId && x.StopSequence == y.StopSequence, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.TripId == y.TripId && x.StopId == y.StopId && x.StopSequence == y.StopSequence, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<Transfer>(actual.Transfers, expected.Transfers,
-                (x, y) => x.FromStopId == y.FromStopId && x.ToStopId == y.ToStopId && x.TransferType == y.TransferType, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.FromStopId == y.FromStopId && x.ToStopId == y.ToStopId && x.TransferType == y.TransferType, GTFSAssert.AreEqual);
             GTFSAssert.AreEqual<Trip>(actual.Trips, expected.Trips,
-                (x, y) => x.Id == y.Id, (x, y) => GTFSAssert.AreEqual(x, y));
+                (x, y) => x.Id == y.Id, GTFSAssert.AreEqual);
         }
 
         /// <summary>
@@ -116,11 +85,11 @@ namespace GTFS.Test
         /// <param name="expectees"></param>
         /// <param name="idEqual"></param>
         /// <param name="areEqualAction"></param>
-        public static void AreEqual<T>(IEnumerable<T> actuals, IEnumerable<T> expectees, 
+        public static void AreEqual<T>(IEnumerable<T> actuals, IEnumerable<T> expectees,
             Func<T, T, bool> idEqual, Action<T, T> areEqualAction)
         {
             Assert.That(actuals.Count(), Is.EqualTo(expectees.Count()));
-            foreach(var actual in actuals)
+            foreach (var actual in actuals)
             {
                 var expected = expectees.First(x => idEqual(x, actual));
                 Assert.That(expected, Is.Not.Null);
@@ -135,7 +104,7 @@ namespace GTFS.Test
         /// <param name="expected"></param>
         public static void AreEqual(FeedInfo actual, FeedInfo expected)
         {
-            if(actual == null)
+            if (actual == null)
             {
                 Assert.That(expected, Is.Null);
                 return;
@@ -211,12 +180,6 @@ namespace GTFS.Test
             Assert.That(actual.ServiceId, Is.EqualTo(expected.ServiceId));
         }
 
-        /// <summary>
-        /// Compares two fare attributes.
-        /// </summary>
-        /// <param name="actual"></param>
-        /// <param name="expected"></param>
-
         public static void AreEqual(FareAttribute actual, FareAttribute expected)
         {
             if (actual == null)
@@ -232,6 +195,11 @@ namespace GTFS.Test
             Assert.That(actual.Transfers, Is.EqualTo(expected.Transfers));
         }
 
+        /// <summary>
+        /// Compares two fare attributes.
+        /// </summary>
+        /// <param name="actual"></param>
+        /// <param name="expected"></param>
         /// <summary>
         /// Compares two fare rules.
         /// </summary>
@@ -400,5 +368,41 @@ namespace GTFS.Test
             Assert.That(actual.ShapeId, Is.EqualTo(expected.ShapeId));
             Assert.That(actual.ShortName, Is.EqualTo(expected.ShortName));
         }
+
+        /// <summary>
+        /// Builds the source from embedded streams.
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<IGTFSSourceFile> BuildSource()
+        {
+            var source = new List<IGTFSSourceFile>
+            {
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"), "agency"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"), "calendar"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar_dates.txt"), "calendar_dates"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_attributes.txt"), "fare_attributes"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_rules.txt"), "fare_rules"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.frequencies.txt"), "frequencies"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"), "routes"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.shapes.txt"), "shapes"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"), "stop_times"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"), "stops"),
+                new GTFSSourceFileStream(
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"), "trips")
+            };
+            return source;
+        }
+
+        #endregion Public Methods
     }
 }

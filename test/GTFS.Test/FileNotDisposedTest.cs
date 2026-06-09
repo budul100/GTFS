@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
 using GTFS.Exceptions;
 using GTFS.IO;
@@ -30,14 +31,49 @@ namespace GTFS.Test
     [TestFixture]
     internal class FileNotDisposedTest
     {
+        #region Private Fields
+
         private static DirectoryInfo _assemblyLocation;
+
+        #endregion Private Fields
+
+        #region Private Properties
 
         private static DirectoryInfo AssemblyLocation
         {
             get
             {
                 // ReSharper disable once AssignNullToNotNullAttribute
-                return _assemblyLocation ?? (_assemblyLocation = new DirectoryInfo(Path.GetDirectoryName(typeof(FileNotDisposedTest).Assembly.Location)));
+                return _assemblyLocation ??= new DirectoryInfo(Path.GetDirectoryName(typeof(FileNotDisposedTest).Assembly.Location));
+            }
+        }
+
+        #endregion Private Properties
+
+        #region Public Methods
+
+        [Test]
+        public void DisposingDirectorySourceClosesSourceFiles()
+        {
+            var directoryInfo = new DirectoryInfo(Path.Combine(AssemblyLocation.FullName, "folder-feed"));
+
+            try
+            {
+                using var gtfsDirectorySource = new GTFSDirectorySource(directoryInfo.FullName);
+
+                var reader = new GTFSReader<GTFSFeed>();
+                reader.Read(gtfsDirectorySource);
+            }
+            catch (GTFSExceptionBase)
+            {
+                // ignore our exceptions
+            }
+
+            var agencyFile = Path.Combine(directoryInfo.FullName, "agency.txt");
+
+            using (File.OpenWrite(agencyFile))
+            {
+                // do nothing
             }
         }
 
@@ -59,42 +95,19 @@ namespace GTFS.Test
 
             var agencyFile = Path.Combine(directoryInfo.FullName, "agency.txt");
 
-            Assert.Throws<IOException>(
-                new TestDelegate(() =>
-                {
-                    using (File.OpenWrite(agencyFile))
-                    {
-                        // do nothing
-                    }
-                }),
-                "The process cannot access the file '{0}' because it is being used by another process.",
-                agencyFile);
-        }
-
-        [Test]
-        public void DisposingDirectorySourceClosesSourceFiles()
-        {
-            var directoryInfo = new DirectoryInfo(Path.Combine(AssemblyLocation.FullName, "folder-feed"));
-
-            try
+            void openWriteAction()
             {
-                using (var gtfsDirectorySource = new GTFSDirectorySource(directoryInfo.FullName))
+                using (File.OpenWrite(agencyFile))
                 {
-                    var reader = new GTFSReader<GTFSFeed>();
-                    reader.Read(gtfsDirectorySource);
+                    // do nothing
                 }
             }
-            catch (GTFSExceptionBase)
-            {
-                // ignore our exceptions
-            }
 
-            var agencyFile = Path.Combine(directoryInfo.FullName, "agency.txt");
-
-            using (File.OpenWrite(agencyFile))
-            {
-                // do nothing
-            }
+            Assert.That(
+                (Action)openWriteAction,
+                Throws.TypeOf<IOException>().With.Message.Contains($"The process cannot access the file '{agencyFile}' because it is being used by another process."));
         }
+
+        #endregion Public Methods
     }
 }

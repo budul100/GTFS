@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using GTFS.IO;
-using GTFS.IO.CSV;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using GTFS.IO;
+using GTFS.IO.CSV;
+using NUnit.Framework;
 
 namespace GTFS.Test
 {
@@ -35,6 +35,8 @@ namespace GTFS.Test
     [TestFixture]
     public class ParseRoutesTests
     {
+        #region Public Methods
+
         /// <summary>
         /// Tests parsing routes.
         /// </summary>
@@ -51,7 +53,6 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"),"routes")
             };
 
-
             // execute the reader.
             var feed = reader.Read(source, source.First(x => x.Name.Equals("routes")));
 
@@ -60,7 +61,7 @@ namespace GTFS.Test
             var routes = feed.Routes.ToList();
             Assert.That(routes.All(x => x.Description == string.Empty), Is.True);
         }
-        
+
         /// <summary>
         /// Tests parsing routes.
         /// </summary>
@@ -77,7 +78,6 @@ namespace GTFS.Test
                 new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.other_feed.routes.no_desc.txt"),"routes")
             };
 
-
             // execute the reader.
             var feed = reader.Read(source, source.First(x => x.Name.Equals("routes")));
 
@@ -86,5 +86,7 @@ namespace GTFS.Test
             var routes = feed.Routes.ToList();
             Assert.That(routes.All(x => x.Description == null), Is.True);
         }
+
+        #endregion Public Methods
     }
 }

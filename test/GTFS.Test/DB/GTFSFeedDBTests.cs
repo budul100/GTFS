@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Reflection;
 using GTFS.DB;
 using GTFS.IO;
 using GTFS.IO.CSV;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace GTFS.Test.DB
 {
@@ -35,51 +35,8 @@ namespace GTFS.Test.DB
     [TestFixture]
     public abstract class GTFSFeedDBTests
     {
-        /// <summary>
-        /// Builds the source from embedded streams.
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerable<IGTFSSourceFile> BuildSource()
-        {
-            var assembly = Assembly.GetExecutingAssembly();
+        #region Public Methods
 
-            var result = new List<IGTFSSourceFile>();
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"), "agency"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"), "calendar"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.calendar_dates.txt"), "calendar_dates"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.fare_attributes.txt"), "fare_attributes"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.fare_rules.txt"), "fare_rules"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.frequencies.txt"), "frequencies"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"), "routes"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.shapes.txt"), "shapes"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"), "stop_times"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"), "stops"));
-            result.Add(new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"), "trips"));
-            return result;
-        }
-
-        /// <summary>
-        /// Builds a test feed.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual IGTFSFeed BuildTestFeed()
-        {
-            // create the reader.
-            var reader = new GTFSReader<GTFSFeed>();
-
-            // build the source
-            var source = this.BuildSource();
-
-            // execute the reader.
-            return reader.Read(source);
-        }
-
-        /// <summary>
-        /// Creates a new test db.
-        /// </summary>
-        /// <returns></returns>
-        protected abstract IGTFSFeedDB CreateDB();
-        
         /// <summary>
         /// Tests adding a feed.
         /// </summary>
@@ -95,6 +52,28 @@ namespace GTFS.Test.DB
             // add/get to/from db and compare all.
             var feedId = db.AddFeed(feed);
             GTFSAssert.AreEqual(feed, db.GetFeed(feedId));
+        }
+
+        /// <summary>
+        /// Test get feeds.
+        /// </summary>
+        [Test]
+        public void TestGetFeeds()
+        {
+            // get test db.
+            var db = this.CreateDB();
+
+            // build test feed.
+            var feed = this.BuildTestFeed();
+
+            // add feed.
+            var feedId = db.AddFeed(feed);
+
+            db.RemoveFeed(feedId);
+
+            // get feed.
+            feed = db.GetFeed(feedId);
+            Assert.That(feed, Is.Null);
         }
 
         /// <summary>
@@ -119,26 +98,61 @@ namespace GTFS.Test.DB
             Assert.That(feed, Is.Null);
         }
 
+        #endregion Public Methods
+
+        #region Protected Methods
+
         /// <summary>
-        /// Test get feeds.
+        /// Builds a test feed.
         /// </summary>
-        [Test]
-        public void TestGetFeeds()
+        /// <returns></returns>
+        protected virtual IGTFSFeed BuildTestFeed()
         {
-            // get test db.
-            var db = this.CreateDB();
+            // create the reader.
+            var reader = new GTFSReader<GTFSFeed>();
 
-            // build test feed.
-            var feed = this.BuildTestFeed();
+            // build the source
+            var source = this.BuildSource();
 
-            // add feed.
-            var feedId = db.AddFeed(feed);
-
-            db.RemoveFeed(feedId);
-
-            // get feed.
-            feed = db.GetFeed(feedId);
-            Assert.That(feed, Is.Null);
+            // execute the reader.
+            return reader.Read(source);
         }
+
+        /// <summary>
+        /// Creates a new test db.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IGTFSFeedDB CreateDB();
+
+        #endregion Protected Methods
+
+        #region Private Methods
+
+        /// <summary>
+        /// Builds the source from embedded streams.
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<IGTFSSourceFile> BuildSource()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+
+            var result = new List<IGTFSSourceFile>
+            {
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"), "agency"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"), "calendar"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.calendar_dates.txt"), "calendar_dates"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.fare_attributes.txt"), "fare_attributes"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.fare_rules.txt"), "fare_rules"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.frequencies.txt"), "frequencies"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"), "routes"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.shapes.txt"), "shapes"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"), "stop_times"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"), "stops"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"), "trips")
+            };
+            return result;
+        }
+
+        #endregion Private Methods
     }
 }

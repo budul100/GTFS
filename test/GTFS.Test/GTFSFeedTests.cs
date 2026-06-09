@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
 using GTFS.Entities;
+using NUnit.Framework;
 
 namespace GTFS.Test
 {
@@ -29,10 +29,15 @@ namespace GTFS.Test
     /// Contains basic tests for <see cref="GTFSFeed"/>.
     /// </summary>
     [TestFixture]
-    // ReSharper disable once InconsistentNaming
     public class GTFSFeedTests
     {
-        private readonly FeedInfoEqualityComparer _comparer = new FeedInfoEqualityComparer();
+        #region Private Fields
+
+        private readonly FeedInfoEqualityComparer _comparer = new();
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         /// <summary>
         /// Tests setting feed info.
@@ -55,7 +60,6 @@ namespace GTFS.Test
                 Version = "some version"
             };
 
-
             // verify initial state.
             var emptyFeedInfo = new FeedInfo();
             var oldFeedInfo = feed.GetFeedInfo();
@@ -68,5 +72,7 @@ namespace GTFS.Test
             var newFeedInfo = feed.GetFeedInfo();
             Assert.That(_comparer.Equals(info, newFeedInfo), Is.True);
         }
+
+        #endregion Public Methods
     }
 }
