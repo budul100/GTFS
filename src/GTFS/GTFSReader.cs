@@ -28,6 +28,7 @@ using GTFS.Entities.Enumerations;
 using GTFS.Exceptions;
 using GTFS.Fields;
 using GTFS.IO;
+using GTFS.Logging;
 
 namespace GTFS
 {
@@ -2299,17 +2300,18 @@ namespace GTFS
             {
                 return this.TimeOfDayReader.Invoke(value);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new TimeOfDay()
+                if (_strict)
                 {
-                    Hours = 0,
-                    Minutes = 0,
-                    Seconds = 0
-                };
+                    throw new GTFSParseException(name, fieldName, value, ex);
+                }
 
-                // throw a GFTS parse exception instead.
-                //throw new GTFSParseException(name, fieldName, value, ex);
+                Logger.Log("GTFSReader", Logging.TraceEventType.Warning,
+                    "Failed to parse time of day field '{0}' in '{1}' with value '{2}': {3}",
+                    fieldName, name, value, ex.Message);
+
+                return null;
             }
         }
 
