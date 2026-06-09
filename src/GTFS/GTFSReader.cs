@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using GTFS.Entities;
 using GTFS.Entities.Enumerations;
 using GTFS.Exceptions;
@@ -39,6 +40,8 @@ namespace GTFS
     {
         #region Private Fields
 
+        private readonly ILogger _logger;
+
         /// <summary>
         /// Flag making this reader very strict about the GTFS-spec.
         /// </summary>
@@ -52,17 +55,23 @@ namespace GTFS
         /// Creates a new GTFS reader.
         /// </summary>
         public GTFSReader()
-            : this(false)
-        {
-        }
+            : this(false) { }
+
+        /// <summary>
+        /// Creates a new GTFS reader.
+        /// </summary>
+        public GTFSReader(bool strict)
+            : this(strict, Logger.CreateLogger(nameof(GTFSReader<T>))) { }
 
         /// <summary>
         /// Creates a new GTFS reader.
         /// </summary>
         /// <param name="strict">Flag to set strict behaviour.</param>
-        public GTFSReader(bool strict)
+        /// <param name="logger">Logger.</param>
+        public GTFSReader(bool strict, ILogger logger)
         {
             _strict = strict;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             this.DateTimeReader = (dateString) =>
                 DateTime.ParseExact(dateString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
@@ -2340,8 +2349,7 @@ namespace GTFS
                     throw new GTFSParseException(name, fieldName, value, ex);
                 }
 
-                Logger.Log("GTFSReader", Logging.TraceEventType.Warning,
-                    "Failed to parse time of day field '{0}' in '{1}' with value '{2}': {3}",
+                _logger.LogWarning("Failed to parse time of day field '{FieldName}' in '{Name}' with value '{Value}': {Message}",
                     fieldName, name, value, ex.Message);
 
                 return null;

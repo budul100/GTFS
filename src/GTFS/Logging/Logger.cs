@@ -20,81 +20,65 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace GTFS.Logging
 {
     /// <summary>
-    /// A logger.
+    /// Provides logging for the GTFS library.
     /// </summary>
-    public class Logger
+    public static class Logger
     {
-        private readonly string _name;
+        #region Private Fields
+
+        private static ILoggerFactory _loggerFactory = NullLoggerFactory.Instance;
+
+        #endregion Private Fields
+
+        #region Public Delegates
 
         /// <summary>
-        /// Creates a new logger.
+        /// Defines the legacy log action function.
         /// </summary>
-        public Logger(string name)
-        {
-            _name = name;
-        }
-
-        /// <summary>
-        /// Creates a new logger.
-        /// </summary>
-        internal static Logger Create(string name)
-        {
-            return new Logger(name);
-        }
-
-        /// <summary>
-        /// Logs a message.
-        /// </summary>
-        public void Log(TraceEventType type, string message, params object[] args)
-        {
-            if (Logger.LogAction == null)
-            {
-                Logger.LogAction = (o, level, localmessage, parameters) =>
-                {
-                    System.Diagnostics.Debug.WriteLine(string.Format("[{0}] {1} - {2}", o, level, localmessage));
-                };
-            }
-
-            Logger.LogAction(_name, type.ToInvariantString().ToLower(), string.Format(message, args), null);
-        }
-
-        /// <summary>
-        /// Logs a message.
-        /// </summary>
-        public static void Log(string name, TraceEventType type, string message, params object[] args)
-        {
-            if (Logger.LogAction == null)
-            {
-                Logger.LogAction = (o, level, localmessage, parameters) =>
-                {
-                    System.Diagnostics.Debug.WriteLine(string.Format("[{0}] {1} - {2}", o, level, localmessage));
-                };
-            }
-            Logger.LogAction(name, type.ToInvariantString().ToLower(), string.Format(message, args), null);
-        }
-
-        /// <summary>
-        /// Defines the log action function.
-        /// </summary>
-        /// <param name="origin">The origin of the message, a class or module name.</param>
-        /// <param name="level">The level of the message, 'critical', 'error', 'warning', 'verbose' or 'information'.</param>
-        /// <param name="message">The message content.</param>
-        /// <param name="parameters">Any parameters that may be useful.</param>
+        [Obsolete("Use Logger.UseLoggerFactory instead. This member will be removed in a future version.")]
         public delegate void LogActionFunction(string origin, string level, string message,
             Dictionary<string, object> parameters);
 
+        #endregion Public Delegates
+
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the action to actually log a message.
+        /// Use UseLoggerFactory instead.
         /// </summary>
-        public static LogActionFunction LogAction
+        [Obsolete("Use Logger.UseLoggerFactory instead. This member will be removed in a future version.")]
+        public static LogActionFunction LogAction { get; set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        /// Configures the logger factory used by the GTFS library.
+        /// </summary>
+        public static void UseLoggerFactory(ILoggerFactory loggerFactory)
         {
-            get;
-            set;
+            _loggerFactory = loggerFactory
+                ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
+
+        #endregion Public Methods
+
+        #region Internal Methods
+
+        internal static ILogger CreateLogger(string categoryName)
+        {
+            return _loggerFactory.CreateLogger(categoryName);
+        }
+
+        #endregion Internal Methods
     }
 }
