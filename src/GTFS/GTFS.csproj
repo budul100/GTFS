@@ -2,15 +2,15 @@
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<AssemblyName>GTFS</AssemblyName>
 		<PackageId>budul100.GTFS</PackageId>
+		<PackageVersion>4.0.1</PackageVersion>
+		<AssemblyName>GTFS</AssemblyName>
 		<Title>GTFS</Title>
 		<Authors>budul100</Authors>
 		<Description>A .NET library for reading and writing GTFS (General Transit Feed Specification) feeds.</Description>
 		<PackageProjectUrl>https://github.com/budul100/GTFS</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>gtfs;transit;routing;public-transport</PackageTags>
-		<PackageVersion>4.0.0</PackageVersion>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/budul100/GTFS</RepositoryUrl>

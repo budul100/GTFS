@@ -96,6 +96,7 @@ namespace GTFS
 
             bool initialized = false;
             var data = new string[3];
+
             foreach (var level in levels)
             {
                 if (!initialized)
@@ -133,6 +134,7 @@ namespace GTFS
 
             bool initialized = false;
             var data = new string[12];
+
             foreach (var pathway in pathways)
             {
                 if (!initialized)
@@ -188,6 +190,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[8];
+
                 foreach (var agency in agencies)
                 {
                     if (!initialized)
@@ -236,6 +239,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[3];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -274,6 +278,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[10];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -326,6 +331,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[7];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -372,6 +378,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[5];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -455,6 +462,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[5];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -496,7 +504,8 @@ namespace GTFS
             if (file != null)
             {
                 bool initialized = false;
-                var data = new string[9];
+                var data = new string[11];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -551,6 +560,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[5];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -593,6 +603,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[14];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -652,7 +663,8 @@ namespace GTFS
             if (file != null)
             {
                 bool initialized = false;
-                var data = new string[10];
+                var data = new string[11];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -709,6 +721,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[4];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
@@ -749,6 +762,7 @@ namespace GTFS
             {
                 bool initialized = false;
                 var data = new string[9];
+
                 foreach (var entity in entities)
                 {
                     if (!initialized)
