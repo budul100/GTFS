@@ -123,7 +123,7 @@ namespace GTFS.IO.CSV
                         { // this is extremely ineffecient but should almost never happen except when parsing invalid feeds.
                             Array.Resize(ref _current, _current.Length + 1);
                         }
-                        _current[idx] = line.Substring(previousCharIdx, charIdx - previousCharIdx);
+                        _current[idx] = line[previousCharIdx..charIdx];
                         idx++;
                         previousCharIdx = charIdx + 1;
                     }
@@ -132,7 +132,7 @@ namespace GTFS.IO.CSV
                 { // this is extremely ineffecient but should almost never happen except when parsing invalid feeds.
                     Array.Resize(ref _current, _current.Length + 1);
                 }
-                _current[idx] = line.Substring(previousCharIdx, line.Length - previousCharIdx);
+                _current[idx] = line[previousCharIdx..];
                 if (_current.Length > idx + 1)
                 { // current array is too long.
                     // this is extremely ineffecient but should almost never happen except when parsing invalid feeds.

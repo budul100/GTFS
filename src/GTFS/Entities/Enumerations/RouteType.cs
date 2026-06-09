@@ -91,30 +91,20 @@ namespace GTFS.Entities.Enumerations
             //11 - Trolleybus - 800
             //12 - Monorail - 405
 
-            switch (routeType)
+            return routeType switch
             {
-                case RouteType.Bus:
-                    return RouteTypeExtended.BusService;
-                case RouteType.CableCar:
-                    return RouteTypeExtended.CableCarService;
-                case RouteType.Rail:
-                    return RouteTypeExtended.RailwayService;
-                case RouteType.Tram:
-                    return RouteTypeExtended.TramService;
-                case RouteType.SubwayMetro:
-                    return RouteTypeExtended.UrbanRailwayService;
-                case RouteType.Ferry:
-                    return RouteTypeExtended.WaterTransportService;
-                case RouteType.Gondola:
-                    return RouteTypeExtended.TelecabinService;
-                case RouteType.Funicular:
-                    return RouteTypeExtended.FunicularService;
-                case RouteType.Trolleybus:
-                    return RouteTypeExtended.TrolleybusService;
-                case RouteType.Monorail:
-                    return RouteTypeExtended.Monorail;
-            }
-            throw new System.Exception("Cannot convert route type.");
+                RouteType.Bus => RouteTypeExtended.BusService,
+                RouteType.CableCar => RouteTypeExtended.CableCarService,
+                RouteType.Rail => RouteTypeExtended.RailwayService,
+                RouteType.Tram => RouteTypeExtended.TramService,
+                RouteType.SubwayMetro => RouteTypeExtended.UrbanRailwayService,
+                RouteType.Ferry => RouteTypeExtended.WaterTransportService,
+                RouteType.Gondola => RouteTypeExtended.TelecabinService,
+                RouteType.Funicular => RouteTypeExtended.FunicularService,
+                RouteType.Trolleybus => RouteTypeExtended.TrolleybusService,
+                RouteType.Monorail => RouteTypeExtended.Monorail,
+                _ => throw new System.Exception("Cannot convert route type."),
+            };
         }
     }
 }

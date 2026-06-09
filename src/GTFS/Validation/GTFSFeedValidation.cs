@@ -121,10 +121,9 @@ namespace GTFS.Validation
                 }
                 stopTimes.Add(stopTimeId);
 
-                List<StopTime> stopTimeList;
-                if (!stopTimesIndex.TryGetValue(stopTime.TripId, out stopTimeList))
-                { 
-                    stopTimeList = new List<StopTime>();
+                if (!stopTimesIndex.TryGetValue(stopTime.TripId, out var stopTimeList))
+                {
+                    stopTimeList = [];
                     stopTimesIndex.Add(stopTime.TripId, stopTimeList);
                 }
                 stopTimeList.Add(stopTime);

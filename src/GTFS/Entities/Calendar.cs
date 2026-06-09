@@ -156,24 +156,17 @@ namespace GTFS.Entities
         {
             get
             {
-                switch (dayOfWeek)
+                return dayOfWeek switch
                 {
-                    case DayOfWeek.Monday:
-                        return (this.Mask & 1) > 0;
-                    case DayOfWeek.Tuesday:
-                        return (this.Mask & 2) > 0;
-                    case DayOfWeek.Wednesday:
-                        return (this.Mask & 4) > 0;
-                    case DayOfWeek.Thursday:
-                        return (this.Mask & 8) > 0;
-                    case DayOfWeek.Friday:
-                        return (this.Mask & 16) > 0;
-                    case DayOfWeek.Saturday:
-                        return (this.Mask & 32) > 0;
-                    case DayOfWeek.Sunday:
-                        return (this.Mask & 64) > 0;
-                }
-                throw new ArgumentOutOfRangeException("Not a valid day of the week.");
+                    DayOfWeek.Monday => (this.Mask & 1) > 0,
+                    DayOfWeek.Tuesday => (this.Mask & 2) > 0,
+                    DayOfWeek.Wednesday => (this.Mask & 4) > 0,
+                    DayOfWeek.Thursday => (this.Mask & 8) > 0,
+                    DayOfWeek.Friday => (this.Mask & 16) > 0,
+                    DayOfWeek.Saturday => (this.Mask & 32) > 0,
+                    DayOfWeek.Sunday => (this.Mask & 64) > 0,
+                    _ => throw new ArgumentOutOfRangeException("Not a valid day of the week."),
+                };
             }
             set
             {

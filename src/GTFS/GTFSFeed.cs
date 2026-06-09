@@ -37,31 +37,31 @@ namespace GTFS
         public GTFSFeed()
         {
             _feedInfo = new FeedInfo();
-            this.Agencies = new UniqueEntityListCollection<Agency>(new List<Agency>(),
+            this.Agencies = new UniqueEntityListCollection<Agency>([],
                 (e, id) => e.Id == id);
-            this.CalendarDates = new EntityListCollection<CalendarDate>(new List<CalendarDate>(),
+            this.CalendarDates = new EntityListCollection<CalendarDate>([],
                 (e, id) => e.ServiceId == id);
-            this.Calendars = new EntityListCollection<Calendar>(new List<Calendar>(),
+            this.Calendars = new EntityListCollection<Calendar>([],
                 (e, id) => e.ServiceId == id);
-            this.FareAttributes = new EntityListCollection<FareAttribute>(new List<FareAttribute>(),
+            this.FareAttributes = new EntityListCollection<FareAttribute>([],
                 (e, id) => e.FareId == id);
-            this.FareRules = new UniqueEntityListCollection<FareRule>(new List<FareRule>(),
+            this.FareRules = new UniqueEntityListCollection<FareRule>([],
                 (e, id) => e.FareId == id);
-            this.Frequencies = new EntityListCollection<Frequency>(new List<Frequency>(),
+            this.Frequencies = new EntityListCollection<Frequency>([],
                 (e, id) => e.TripId == id);
-            this.Routes = new UniqueEntityListCollection<Route>(new List<Route>(),
+            this.Routes = new UniqueEntityListCollection<Route>([],
                 (e, id) => e.Id == id);
-            this.Shapes = new EntityListCollection<Shape>(new List<Shape>(),
+            this.Shapes = new EntityListCollection<Shape>([],
                 (e, id) => e.Id == id);
-            this.Stops = new UniqueEntityListCollection<Stop>(new List<Stop>(),
+            this.Stops = new UniqueEntityListCollection<Stop>([],
                 (e, id) => e.Id == id);
-            this.StopTimes = new StopTimeListCollection(new List<StopTime>());
-            this.Transfers = new TransferListCollection(new List<Transfer>());
-            this.Trips = new UniqueEntityListCollection<Trip>(new List<Trip>(),
+            this.StopTimes = new StopTimeListCollection([]);
+            this.Transfers = new TransferListCollection([]);
+            this.Trips = new UniqueEntityListCollection<Trip>([],
                 (e, id) => e.Id == id);
-            this.Levels = new UniqueEntityListCollection<Level>(new List<Level>(),
+            this.Levels = new UniqueEntityListCollection<Level>([],
                 (e, id) => e.Id == id);
-            this.Pathways = new UniqueEntityListCollection<Pathway>(new List<Pathway>(),
+            this.Pathways = new UniqueEntityListCollection<Pathway>([],
                 (e, id) => e.Id == id);
         }
 

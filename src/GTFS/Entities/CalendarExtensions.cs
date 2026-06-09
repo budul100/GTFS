@@ -95,7 +95,7 @@ namespace GTFS.Entities
         {
             if(calendar.CoversDate(day))
             { // no work needs to be done.
-                return new Calendar[] { calendar };
+                return [calendar];
             }
 
             // naively add another calendar entity representing one day.
@@ -111,9 +111,9 @@ namespace GTFS.Entities
                     ServiceId = calendar.ServiceId
                 };
                 newCalendar.Set(day, true);
-                return new Calendar[] { newCalendar };
+                return [newCalendar];
             }
-            return new Calendar[] { calendar, day.CreateCalendar(calendar.ServiceId) };
+            return [calendar, day.CreateCalendar(calendar.ServiceId)];
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace GTFS.Entities
         {
             if (!calendar.CoversDate(day))
             { // no work needs to be done.
-                return new Calendar[] { calendar };
+                return [calendar];
             }
 
             var firstDayOfWeek = day.FirstDayOfWeek();
@@ -133,7 +133,7 @@ namespace GTFS.Entities
                lastDayOfWeek >= calendar.EndDate)
             { // yay! this is exceptional but let's take advantage of this.
                 calendar[day.DayOfWeek] = false;
-                return new Calendar[] { calendar };
+                return [calendar];
             }
 
             // possibly split in two or three pieces.
@@ -153,7 +153,7 @@ namespace GTFS.Entities
                     EndDate = calendar.EndDate
                 };
                 rest.CopyWeekPatternFrom(calendar);
-                return new Calendar[] { subtracted, rest };
+                return [subtracted, rest];
             }
             else if (lastDayOfWeek >= calendar.EndDate)
             { // two pieces, a last week with the day substracted and the rest.
@@ -171,7 +171,7 @@ namespace GTFS.Entities
                 };
                 subtracted.CopyWeekPatternFrom(calendar);
                 subtracted[day.DayOfWeek] = false;
-                return new Calendar[] { rest, subtracted };
+                return [rest, subtracted];
             }
             else
             { // three pieces, a first period, a week with the day subtracted and a last period.
@@ -196,7 +196,7 @@ namespace GTFS.Entities
                     EndDate = calendar.EndDate
                 };
                 rest2.CopyWeekPatternFrom(calendar);
-                return new Calendar[] { rest1, subtracted, rest2 };
+                return [rest1, subtracted, rest2];
             }
         }
 
@@ -240,24 +240,17 @@ namespace GTFS.Entities
         /// <returns></returns>
         public static DateTime FirstDayOfWeek(this DateTime day)
         {
-            switch(day.DayOfWeek)
+            return day.DayOfWeek switch
             {
-                case DayOfWeek.Monday:
-                    return day;
-                case DayOfWeek.Tuesday:
-                    return day.AddDays(-1);
-                case DayOfWeek.Wednesday:
-                    return day.AddDays(-2);
-                case DayOfWeek.Thursday:
-                    return day.AddDays(-3);
-                case DayOfWeek.Friday:
-                    return day.AddDays(-4);
-                case DayOfWeek.Saturday:
-                    return day.AddDays(-5);
-                case DayOfWeek.Sunday:
-                    return day.AddDays(-6);
-            }
-            throw new ArgumentOutOfRangeException("Day is not a valid day of the week.");
+                DayOfWeek.Monday => day,
+                DayOfWeek.Tuesday => day.AddDays(-1),
+                DayOfWeek.Wednesday => day.AddDays(-2),
+                DayOfWeek.Thursday => day.AddDays(-3),
+                DayOfWeek.Friday => day.AddDays(-4),
+                DayOfWeek.Saturday => day.AddDays(-5),
+                DayOfWeek.Sunday => day.AddDays(-6),
+                _ => throw new ArgumentOutOfRangeException("Day is not a valid day of the week."),
+            };
         }
 
         /// <summary>
@@ -267,24 +260,17 @@ namespace GTFS.Entities
         /// <returns></returns>
         public static DateTime LastDayOfWeek(this DateTime day)
         {
-            switch (day.DayOfWeek)
+            return day.DayOfWeek switch
             {
-                case DayOfWeek.Monday:
-                    return day.AddDays(6);
-                case DayOfWeek.Tuesday:
-                    return day.AddDays(5);
-                case DayOfWeek.Wednesday:
-                    return day.AddDays(4);
-                case DayOfWeek.Thursday:
-                    return day.AddDays(3);
-                case DayOfWeek.Friday:
-                    return day.AddDays(2);
-                case DayOfWeek.Saturday:
-                    return day.AddDays(1);
-                case DayOfWeek.Sunday:
-                    return day;
-            }
-            throw new ArgumentOutOfRangeException("Day is not a valid day of the week.");
+                DayOfWeek.Monday => day.AddDays(6),
+                DayOfWeek.Tuesday => day.AddDays(5),
+                DayOfWeek.Wednesday => day.AddDays(4),
+                DayOfWeek.Thursday => day.AddDays(3),
+                DayOfWeek.Friday => day.AddDays(2),
+                DayOfWeek.Saturday => day.AddDays(1),
+                DayOfWeek.Sunday => day,
+                _ => throw new ArgumentOutOfRangeException("Day is not a valid day of the week."),
+            };
         }
 
         /// <summary>

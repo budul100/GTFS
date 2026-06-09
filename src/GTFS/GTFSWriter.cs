@@ -819,14 +819,12 @@ namespace GTFS
             //A value of 1 indicates that service has been added for the specified date.
             //A value of 2 indicates that service has been removed for the specified date.
 
-            switch (value)
+            return value switch
             {
-                case ExceptionType.Added:
-                    return "1";
-                case ExceptionType.Removed:
-                    return "2";
-            }
-            return string.Empty;
+                ExceptionType.Added => "1",
+                ExceptionType.Removed => "2",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -889,14 +887,12 @@ namespace GTFS
             //0 - Fare is paid on board.
             //1 - Fare must be paid before boarding.
 
-            switch (value)
+            return value switch
             {
-                case PaymentMethodType.OnBoard:
-                    return "0";
-                case PaymentMethodType.BeforeBoarding:
-                    return "1";
-            }
-            return string.Empty;
+                PaymentMethodType.OnBoard => "0",
+                PaymentMethodType.BeforeBoarding => "1",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -1006,14 +1002,12 @@ namespace GTFS
         /// <returns></returns>
         protected string WriteFieldTimepointType(string name, string fieldName, TimePointType value)
         {
-            switch (value)
+            return value switch
             {
-                case TimePointType.Approximate:
-                    return "0";
-                case TimePointType.Exact:
-                    return "1";
-            }
-            return string.Empty;
+                TimePointType.Approximate => "0",
+                TimePointType.Exact => "1",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -1067,19 +1061,14 @@ namespace GTFS
         /// <returns></returns>
         protected string WriteFieldTransferType(string name, string fieldName, TransferType value)
         {
-            switch (value)
+            return value switch
             {
-                case TransferType.Recommended:
-                    return "0";
-                case TransferType.TimedTransfer:
-                    return "1";
-                case TransferType.MinimumTime:
-                    return "2";
-                case TransferType.NotPossible:
-                    return "3";
-            }
-
-            return string.Empty;
+                TransferType.Recommended => "0",
+                TransferType.TimedTransfer => "1",
+                TransferType.MinimumTime => "2",
+                TransferType.NotPossible => "3",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>

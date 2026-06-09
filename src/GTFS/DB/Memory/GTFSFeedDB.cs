@@ -35,7 +35,7 @@ namespace GTFS.DB.Memory
         /// <summary>
         /// Holds all the feeds that have been added.
         /// </summary>
-        private List<IGTFSFeed> _feeds = new List<IGTFSFeed>();
+        private List<IGTFSFeed> _feeds = [];
 
         /// <summary>
         /// Gets the connection string.

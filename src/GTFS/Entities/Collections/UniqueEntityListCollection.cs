@@ -151,7 +151,7 @@ namespace GTFS.Entities.Collections
         /// <returns></returns>
         public void RemoveAll()
         {
-            _entities = new List<T>();
+            _entities = [];
         }
 
         /// <summary>

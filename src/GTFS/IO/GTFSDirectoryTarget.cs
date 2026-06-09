@@ -40,7 +40,7 @@ namespace GTFS.IO
         public GTFSDirectoryTarget(DirectoryInfo directory)
         {
             _directory = directory;
-            _targets = new List<IGTFSTargetFile>();
+            _targets = [];
         }
 
         /// <summary>

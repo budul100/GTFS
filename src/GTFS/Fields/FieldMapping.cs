@@ -47,8 +47,8 @@ namespace GTFS.Fields
         /// </summary>
         internal FieldMap()
         {
-            _expectedToActual = new Dictionary<string, string>();
-            _actualToExpected = new Dictionary<string, string>();
+            _expectedToActual = [];
+            _actualToExpected = [];
         }
 
         /// <summary>
@@ -78,8 +78,7 @@ namespace GTFS.Fields
         /// <returns></returns>
         public string GetActual(string expected)
         {
-            string actual;
-            if(_expectedToActual.TryGetValue(expected, out actual))
+            if (_expectedToActual.TryGetValue(expected, out var actual))
             {
                 return actual;
             }
@@ -93,8 +92,7 @@ namespace GTFS.Fields
         /// <returns></returns>
         public string GetExpected(string actual)
         {
-            string expected;
-            if (_expectedToActual.TryGetValue(actual, out expected))
+            if (_expectedToActual.TryGetValue(actual, out var expected))
             {
                 return expected;
             }
