@@ -71,13 +71,13 @@ namespace GTFS
             {
                 using var source = new GTFSDirectorySource(path, separator);
 
-                return reader.Read<T>(source);
+                return reader.Read(source);
             }
             else if (File.Exists(path) && path.ToLower().EndsWith(".zip"))
             {
                 using var source = new GTFSArchiveSource(File.OpenRead(path), separator);
 
-                return reader.Read<T>(source);
+                return reader.Read(source);
             }
 
             throw new ArgumentException("Could not open GTFS feed, directory or archive not found.", nameof(path));

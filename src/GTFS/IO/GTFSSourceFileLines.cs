@@ -69,7 +69,7 @@ namespace GTFS.IO
         /// Requests a new enumerator.
         /// </summary>
         /// <returns></returns>
-        public System.Collections.Generic.IEnumerator<string[]> GetEnumerator()
+        public IEnumerator<string[]> GetEnumerator()
         {
             if(_reader != null)
             {

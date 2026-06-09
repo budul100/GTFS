@@ -46,35 +46,39 @@ namespace GTFS
         public void Write(T feed, IEnumerable<IGTFSTargetFile> target)
         {
             // order files by id
-            var agenciesToWrite = feed.Agencies.OrderBy(x => x.Id).ToList();
-            var calendarDatesToWrite = feed.CalendarDates.OrderBy(x => x.ServiceId).OrderBy(y => y.ExceptionType).OrderBy(z => z.Date).ToList();
-            var calendarsToWrite = feed.Calendars.OrderBy(x => x.ServiceId).ToList();
-            var fareAttributesToWrite = feed.FareAttributes.OrderBy(x => x.FareId).ToList();
-            var fareRulesToWrite = feed.FareRules.OrderBy(x => x.RouteId).ToList();
-            var frequenciesToWrite = feed.Frequencies.OrderBy(x => x.TripId).ToList();
-            var routesToWrite = feed.Routes.OrderBy(x => x.Id).ToList();
-            var stopsToWrite = feed.Stops.OrderBy(x => x.Id).ToList();
-            var stopTimesToWrite = feed.StopTimes.OrderBy(x => x.TripId).ToList();
-            var tripsToWrite = feed.Trips.OrderBy(x => x.Id).ToList();
-            var levelsToWrite = feed.Levels.OrderBy(x => x.Id).ToList();
-            var pathwaysToWrite = feed.Pathways.OrderBy(x => x.Id).ToList();
+            var calendarDatesToWrite = feed.CalendarDates
+                .OrderBy(x => x.ServiceId)
+                .ThenBy(x => x.Date)
+                .ThenBy(x => x.ExceptionType)
+                .ToArray();
+            var calendarsToWrite = feed.Calendars.OrderBy(x => x.ServiceId).ToArray();
+            var agenciesToWrite = feed.Agencies.OrderBy(x => x.Id).ToArray();
+            var fareAttributesToWrite = feed.FareAttributes.OrderBy(x => x.FareId).ToArray();
+            var fareRulesToWrite = feed.FareRules.OrderBy(x => x.RouteId).ToArray();
+            var frequenciesToWrite = feed.Frequencies.OrderBy(x => x.TripId).ToArray();
+            var routesToWrite = feed.Routes.OrderBy(x => x.Id).ToArray();
+            var stopsToWrite = feed.Stops.OrderBy(x => x.Id).ToArray();
+            var stopTimesToWrite = feed.StopTimes.OrderBy(x => x.TripId).ToArray();
+            var tripsToWrite = feed.Trips.OrderBy(x => x.Id).ToArray();
+            var levelsToWrite = feed.Levels.OrderBy(x => x.Id).ToArray();
+            var pathwaysToWrite = feed.Pathways.OrderBy(x => x.Id).ToArray();
 
             // write files on-by-one.
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "agency"), agenciesToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "calendar_dates"), calendarDatesToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "calendar"), calendarsToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "fare_attributes"), fareAttributesToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "fare_rules"), fareRulesToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "feed_info"), feed.GetFeedInfo());
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "frequencies"), frequenciesToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "routes"), routesToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "shapes"), feed.Shapes);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "stops"), stopsToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "stop_times"), stopTimesToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "transfers"), feed.Transfers);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "trips"), tripsToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "levels"), levelsToWrite);
-            this.Write(target.FirstOrDefault<IGTFSTargetFile>((x) => x.Name == "pathways"), pathwaysToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "agency"), agenciesToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "calendar_dates"), calendarDatesToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "calendar"), calendarsToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "fare_attributes"), fareAttributesToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "fare_rules"), fareRulesToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "feed_info"), feed.GetFeedInfo());
+            this.Write(target.FirstOrDefault((x) => x.Name == "frequencies"), frequenciesToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "routes"), routesToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "shapes"), feed.Shapes);
+            this.Write(target.FirstOrDefault((x) => x.Name == "stops"), stopsToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "stop_times"), stopTimesToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "transfers"), feed.Transfers);
+            this.Write(target.FirstOrDefault((x) => x.Name == "trips"), tripsToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "levels"), levelsToWrite);
+            this.Write(target.FirstOrDefault((x) => x.Name == "pathways"), pathwaysToWrite);
         }
 
         #endregion Public Methods

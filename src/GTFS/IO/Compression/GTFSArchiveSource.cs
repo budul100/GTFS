@@ -13,7 +13,7 @@ namespace GTFS.IO.Compression
     /// </summary>
     public class GTFSArchiveSource : IEnumerable<IGTFSSourceFile>, IDisposable
     {
-        private readonly System.IO.Compression.ZipArchive _archive;
+        private readonly ZipArchive _archive;
         
         private char? _customSeparator;
         private List<IGTFSSourceFile> _sourceFiles;
@@ -72,7 +72,7 @@ namespace GTFS.IO.Compression
         /// Returns the enumerator for this IEnumerable.
         /// </summary>
         /// <returns></returns>
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             this.BuildSource();
             return _sourceFiles.GetEnumerator();
