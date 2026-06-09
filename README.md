@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="icon.png" width="80" alt="GTFS logo" />
-</p>
-
-# GTFS
+# ![](icon.png) GTFS
 
 [![NuGet](https://img.shields.io/nuget/v/budul100.GTFS.svg)](https://www.nuget.org/packages/budul100.GTFS)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/budul100.GTFS.svg)](https://www.nuget.org/packages/budul100.GTFS)
@@ -78,26 +74,26 @@ Logger.UseLoggerFactory(loggerFactory);
 
 ### Supported files
 
-| File | Status |
-|---|---|
-| `agency.txt` | Supported |
-| `stops.txt` | Supported |
-| `routes.txt` | Supported |
-| `trips.txt` | Supported |
-| `stop_times.txt` | Supported |
-| `calendar.txt` | Supported |
-| `calendar_dates.txt` | Supported |
-| `fare_attributes.txt` | Supported |
-| `fare_rules.txt` | Supported |
-| `shapes.txt` | Supported |
-| `frequencies.txt` | Supported |
-| `transfers.txt` | Supported, including transfer_type 4 and 5 |
-| `feed_info.txt` | Supported |
-| `pathways.txt` | Supported |
-| `levels.txt` | Supported |
-| `booking_rules.txt` | Not yet supported |
-| `location_groups.txt` | Not yet supported |
-| `locations.geojson` | Not yet supported |
+| File                  | Status                                     |
+| --------------------- | ------------------------------------------ |
+| `agency.txt`          | Supported                                  |
+| `stops.txt`           | Supported                                  |
+| `routes.txt`          | Supported                                  |
+| `trips.txt`           | Supported                                  |
+| `stop_times.txt`      | Supported                                  |
+| `calendar.txt`        | Supported                                  |
+| `calendar_dates.txt`  | Supported                                  |
+| `fare_attributes.txt` | Supported                                  |
+| `fare_rules.txt`      | Supported                                  |
+| `shapes.txt`          | Supported                                  |
+| `frequencies.txt`     | Supported                                  |
+| `transfers.txt`       | Supported, including transfer_type 4 and 5 |
+| `feed_info.txt`       | Supported                                  |
+| `pathways.txt`        | Supported                                  |
+| `levels.txt`          | Supported                                  |
+| `booking_rules.txt`   | Not yet supported                          |
+| `location_groups.txt` | Not yet supported                          |
+| `locations.geojson`   | Not yet supported                          |
 
 ### Notable additions in this fork
 
@@ -139,6 +135,7 @@ dotnet test
 Pull requests are welcome. For larger changes, please open an issue first to discuss the intended approach.
 
 When adding support for new GTFS entities or fields, please include:
+
 - The entity class or property with `[FieldName]` and `[Required]` attributes where applicable
 - Reader support (`ParseField*` method and integration into the relevant `Parse*` method)
 - Writer support (`WriteField*` method and integration into the relevant `Write` method)
