@@ -1,4 +1,4 @@
-# ![](icon.png) GTFS
+# ![GTFS icon](https://raw.githubusercontent.com/budul100/GTFS/develop/icon.png) GTFS
 
 [![NuGet](https://img.shields.io/nuget/v/budul100.GTFS.svg)](https://www.nuget.org/packages/budul100.GTFS)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/budul100.GTFS.svg)](https://www.nuget.org/packages/budul100.GTFS)
