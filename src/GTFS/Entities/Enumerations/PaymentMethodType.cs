@@ -30,10 +30,10 @@ namespace GTFS.Entities.Enumerations
         /// <summary>
         /// Fare is paid on board.
         /// </summary>
-        OnBoard,
+        OnBoard = 0,
         /// <summary>
         /// Fare must be paid before boarding.
         /// </summary>
-        BeforeBoarding
+        BeforeBoarding = 1
     }
 }

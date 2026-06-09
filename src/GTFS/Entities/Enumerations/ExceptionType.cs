@@ -28,12 +28,12 @@ namespace GTFS.Entities.Enumerations
     public enum ExceptionType
     {
         /// <summary>
-        /// The service has been added for the specified date.
+        /// Service has been added for the specified date.
         /// </summary>
-        Added,
+        Added = 1,
         /// <summary>
-        /// The service has been removed for the specified date.
+        /// Service has been removed for the specified date.
         /// </summary>
-        Removed
+        Removed = 2
     }
 }

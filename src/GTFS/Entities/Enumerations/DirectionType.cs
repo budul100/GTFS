@@ -37,10 +37,10 @@ namespace GTFS.Entities.Enumerations
         /// <summary>
         /// Travel in one direction (e.g. outbound travel).
         /// </summary>
-        OneDirection,
+        OneDirection = 0,
         /// <summary>
         /// Travel in the opposite direction (e.g. inbound travel).
         /// </summary>
-        OppositeDirection
+        OppositeDirection = 1
     }
 }
