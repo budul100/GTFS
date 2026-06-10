@@ -1,7 +1,7 @@
 # ![GTFS icon](https://raw.githubusercontent.com/budul100/GTFS/develop/icon.png) GTFS
 
-[![NuGet](https://img.shields.io/nuget/v/budul.GTFS.svg)](https://www.nuget.org/packages/budul100.GTFS)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/budul.GTFS.svg)](https://www.nuget.org/packages/budul100.GTFS)
+[![NuGet](https://img.shields.io/nuget/v/budul.GTFS.svg)](https://www.nuget.org/packages/budul.GTFS)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/budul.GTFS.svg)](https://www.nuget.org/packages/budul.GTFS)
 
 A .NET library for reading and writing [General Transit Feed Specification (GTFS)](https://gtfs.org/) feeds.
 
@@ -50,7 +50,7 @@ var feed = reader.Read("path/to/gtfs");
 ```csharp
 foreach (var route in feed.Routes)
 {
-    Console.WriteLine($"{route.Id}: {route.ShortName} – {route.LongName}");
+    Console.WriteLine($"{route.Id}: {route.ShortName} â€“ {route.LongName}");
 }
 
 var stopTimes = feed.StopTimes.GetForTrip("trip_id_here");
