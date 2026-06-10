@@ -191,7 +191,7 @@ namespace GTFS.Test
             Assert.That(fareAttributes[idx].CurrencyType, Is.EqualTo("USD"));
             Assert.That(fareAttributes[idx].PaymentMethod, Is.EqualTo(PaymentMethodType.OnBoard));
             Assert.That(fareAttributes[idx].Transfers, Is.EqualTo(0));
-            Assert.That(fareAttributes[idx].TransferDuration, Is.EqualTo(string.Empty));
+            Assert.That(fareAttributes[idx].TransferDuration, Is.Null);
 
             //a,5.25,USD,0,0,
             idx = 1;
@@ -200,7 +200,7 @@ namespace GTFS.Test
             Assert.That(fareAttributes[idx].CurrencyType, Is.EqualTo("USD"));
             Assert.That(fareAttributes[idx].PaymentMethod, Is.EqualTo(PaymentMethodType.OnBoard));
             Assert.That(fareAttributes[idx].Transfers, Is.EqualTo(0));
-            Assert.That(fareAttributes[idx].TransferDuration, Is.EqualTo(string.Empty));
+            Assert.That(fareAttributes[idx].TransferDuration, Is.Null);
         }
 
         /// <summary>
@@ -229,33 +229,33 @@ namespace GTFS.Test
             int idx = 0;
             Assert.That(fareRules[idx].RouteId, Is.EqualTo("AB"));
             Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
-            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].OriginId, Is.Null);
+            Assert.That(fareRules[idx].DestinationId, Is.Null);
+            Assert.That(fareRules[idx].ContainsId, Is.Null);
 
             //p,STBA,,,
             idx = 1;
             Assert.That(fareRules[idx].RouteId, Is.EqualTo("STBA"));
             Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
-            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].OriginId, Is.Null);
+            Assert.That(fareRules[idx].DestinationId, Is.Null);
+            Assert.That(fareRules[idx].ContainsId, Is.Null);
 
             //p,BFC,,,
             idx = 2;
             Assert.That(fareRules[idx].RouteId, Is.EqualTo("BFC"));
             Assert.That(fareRules[idx].FareId, Is.EqualTo("p"));
-            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].OriginId, Is.Null);
+            Assert.That(fareRules[idx].DestinationId, Is.Null);
+            Assert.That(fareRules[idx].ContainsId, Is.Null);
 
             //a,AAMV,,,
             idx = 3;
             Assert.That(fareRules[idx].RouteId, Is.EqualTo("AAMV"));
             Assert.That(fareRules[idx].FareId, Is.EqualTo("a"));
-            Assert.That(fareRules[idx].OriginId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].DestinationId, Is.EqualTo(string.Empty));
-            Assert.That(fareRules[idx].ContainsId, Is.EqualTo(string.Empty));
+            Assert.That(fareRules[idx].OriginId, Is.Null);
+            Assert.That(fareRules[idx].DestinationId, Is.Null);
+            Assert.That(fareRules[idx].ContainsId, Is.Null);
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace GTFS.Test
             Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
             Assert.That(routes[idx].ShortName, Is.EqualTo("10"));
             Assert.That(routes[idx].LongName, Is.EqualTo("Airport - Bullfrog"));
-            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Description, Is.Null);
             Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
             Assert.That(routes[idx].Color, Is.EqualTo(-3932017));
             Assert.That(routes[idx].TextColor, Is.EqualTo(null));
@@ -338,7 +338,7 @@ namespace GTFS.Test
             Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
             Assert.That(routes[idx].ShortName, Is.EqualTo("20"));
             Assert.That(routes[idx].LongName, Is.EqualTo("Bullfrog - Furnace Creek Resort"));
-            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Description, Is.Null);
             Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
             Assert.That(routes[idx].Color, Is.EqualTo(-1));
             Assert.That(routes[idx].TextColor, Is.EqualTo(null));
@@ -349,7 +349,7 @@ namespace GTFS.Test
             Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
             Assert.That(routes[idx].ShortName, Is.EqualTo("30"));
             Assert.That(routes[idx].LongName, Is.EqualTo("Stagecoach - Airport Shuttle"));
-            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Description, Is.Null);
             Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
             Assert.That(routes[idx].Color, Is.EqualTo(null));
             Assert.That(routes[idx].TextColor, Is.EqualTo(null));
@@ -360,7 +360,7 @@ namespace GTFS.Test
             Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
             Assert.That(routes[idx].ShortName, Is.EqualTo("40"));
             Assert.That(routes[idx].LongName, Is.EqualTo("City"));
-            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Description, Is.Null);
             Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
             Assert.That(routes[idx].Color, Is.EqualTo(null));
             Assert.That(routes[idx].TextColor, Is.EqualTo(null));
@@ -371,7 +371,7 @@ namespace GTFS.Test
             Assert.That(routes[idx].AgencyId, Is.EqualTo("DTA"));
             Assert.That(routes[idx].ShortName, Is.EqualTo("50"));
             Assert.That(routes[idx].LongName, Is.EqualTo("Airport - Amargosa Valley"));
-            Assert.That(routes[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(routes[idx].Description, Is.Null);
             Assert.That(routes[idx].Type, Is.EqualTo(RouteTypeExtended.BusService));
             Assert.That(routes[idx].Color, Is.EqualTo(null));
             Assert.That(routes[idx].TextColor, Is.EqualTo(null));
@@ -440,19 +440,19 @@ namespace GTFS.Test
             int idx = 0;
             Assert.That(stops[idx].Id, Is.EqualTo("FUR_CREEK_RES"));
             Assert.That(stops[idx].Name, Is.EqualTo("Furnace Creek Resort (Demo)"));
-            Assert.That(stops[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(stops[idx].Description, Is.Null);
             Assert.That(stops[idx].Latitude, Is.EqualTo(36.425288));
             Assert.That(stops[idx].Longitude, Is.EqualTo(-117.133162));
-            Assert.That(stops[idx].Url, Is.EqualTo(string.Empty));
+            Assert.That(stops[idx].Url, Is.Null);
 
             // @ 10: AMV,Amargosa Valley (Demo),,36.641496,-116.40094,,
             idx = 8;
             Assert.That(stops[idx].Id, Is.EqualTo("AMV"));
             Assert.That(stops[idx].Name, Is.EqualTo("Amargosa Valley (Demo)"));
-            Assert.That(stops[idx].Description, Is.EqualTo(string.Empty));
+            Assert.That(stops[idx].Description, Is.Null);
             Assert.That(stops[idx].Latitude, Is.EqualTo(36.641496));
             Assert.That(stops[idx].Longitude, Is.EqualTo(-116.40094));
-            Assert.That(stops[idx].Url, Is.EqualTo(string.Empty));
+            Assert.That(stops[idx].Url, Is.Null);
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace GTFS.Test
             Assert.That(stopTimes[idx].DepartureTime, Is.EqualTo(new TimeOfDay() { Hours = 8 }));
             Assert.That(stopTimes[idx].StopId, Is.EqualTo("BEATTY_AIRPORT"));
             Assert.That(stopTimes[idx].StopSequence, Is.EqualTo(1));
-            Assert.That(stopTimes[idx].StopHeadsign, Is.EqualTo(string.Empty));
+            Assert.That(stopTimes[idx].StopHeadsign, Is.Null);
             Assert.That(stopTimes[idx].PickupType, Is.EqualTo(null));
             Assert.That(stopTimes[idx].DropOffType, Is.EqualTo(null));
             Assert.That(stopTimes[idx].ShapeDistTravelled, Is.EqualTo(null));
@@ -496,7 +496,7 @@ namespace GTFS.Test
             Assert.That(stopTimes[idx].DepartureTime, Is.EqualTo(new TimeOfDay() { Hours = 6, Minutes = 20 }));
             Assert.That(stopTimes[idx].StopId, Is.EqualTo("BEATTY_AIRPORT"));
             Assert.That(stopTimes[idx].StopSequence, Is.EqualTo(2));
-            Assert.That(stopTimes[idx].StopHeadsign, Is.EqualTo(string.Empty));
+            Assert.That(stopTimes[idx].StopHeadsign, Is.Null);
             Assert.That(stopTimes[idx].PickupType, Is.EqualTo(null));
             Assert.That(stopTimes[idx].DropOffType, Is.EqualTo(null));
             Assert.That(stopTimes[idx].ShapeDistTravelled, Is.EqualTo(null));
@@ -537,14 +537,14 @@ namespace GTFS.Test
             Assert.That(tranfers[idx].FromStopId, Is.EqualTo("BULLFROG"));
             Assert.That(tranfers[idx].ToStopId, Is.EqualTo("BEATTY_AIRPORT"));
             Assert.That(tranfers[idx].TransferType, Is.EqualTo(TransferType.NotPossible));
-            Assert.That(tranfers[idx].MinimumTransferTime, Is.EqualTo(string.Empty));
+            Assert.That(tranfers[idx].MinimumTransferTime, Is.Null);
 
             //EMSI,AMV,1,
             idx = 2;
             Assert.That(tranfers[idx].FromStopId, Is.EqualTo("EMSI"));
             Assert.That(tranfers[idx].ToStopId, Is.EqualTo("AMV"));
             Assert.That(tranfers[idx].TransferType, Is.EqualTo(TransferType.TimedTransfer));
-            Assert.That(tranfers[idx].MinimumTransferTime, Is.EqualTo(string.Empty));
+            Assert.That(tranfers[idx].MinimumTransferTime, Is.Null);
         }
 
         /// <summary>
@@ -595,7 +595,7 @@ namespace GTFS.Test
             Assert.That(trips[idx].Id, Is.EqualTo("AAMV4"));
             Assert.That(trips[idx].Headsign, Is.EqualTo("\"to Airport\""));
             Assert.That(trips[idx].Direction, Is.EqualTo(DirectionType.OppositeDirection));
-            Assert.That(trips[idx].BlockId, Is.EqualTo(""));
+            Assert.That(trips[idx].BlockId, Is.Null);
             Assert.That(trips[idx].ShapeId, Is.EqualTo("shape_11"));
         }
 
@@ -612,29 +612,29 @@ namespace GTFS.Test
             var source = new List<IGTFSSourceFile>
             {
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"), "agency"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.agency.txt"), "agency"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"), "calendar"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.calendar.txt"), "calendar"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.calendar_dates.txt"), "calendar_dates"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.calendar_dates.txt"), "calendar_dates"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_attributes.txt"), "fare_attributes"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.fare_attributes.txt"), "fare_attributes"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.fare_rules.txt"), "fare_rules"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.fare_rules.txt"), "fare_rules"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.frequencies.txt"), "frequencies"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.frequencies.txt"), "frequencies"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"), "routes"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.routes.txt"), "routes"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.shapes.txt"), "shapes"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.shapes.txt"), "shapes"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"), "stop_times"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.stop_times.txt"), "stop_times"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"), "stops"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.stops.txt"), "stops"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"), "trips"),
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.trips.txt"), "trips"),
                 new GTFSSourceFileStream(
-                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.transfers.txt"), "transfers")
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.transfers.txt"), "transfers")
             };
             return source;
         }

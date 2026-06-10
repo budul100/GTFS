@@ -481,10 +481,13 @@ namespace GTFS
         protected virtual string CleanFieldValue(string value)
         {
             value = value.Trim();
-            if (value.Length >= 2 && value[0] == '"' && value[^1] == '"')
-                value = value[1..^1];
 
-            return value;
+            if (value.Length >= 2 && value[0] == '"' && value[^1] == '"')
+                value = value[1..^1].Replace("\"\"", "\"");
+
+            return string.IsNullOrEmpty(value) || value.All(c => c == '"')
+                ? null
+                : value;
         }
 
         /// <summary>
@@ -1062,8 +1065,11 @@ namespace GTFS
         /// <returns></returns>
         protected virtual string ParseFieldString(string name, string fieldName, string value)
         {
-            return CleanFieldValue(value)
-                .Replace("\"\"", "\"");
+            value = value.Trim();
+
+            return string.IsNullOrEmpty(value) || value.All(c => c == '"')
+                ? null
+                : value;
         }
 
         /// <summary>
@@ -1572,7 +1578,7 @@ namespace GTFS
 
                 case "level_id":
                     stop.LevelId = this.ParseFieldString(header.Name, fieldName, value);
-                    if (stop.LevelId.Contains(".0"))
+                    if (stop.LevelId?.Contains(".0") == true)
                     {
                         stop.LevelId = stop.LevelId.Replace(".0", "");
                     }
@@ -2052,9 +2058,9 @@ namespace GTFS
             return value switch
             {
                 "0" => (DropOffType?)DropOffType.Regular,
-                "1" => (DropOffType?)DropOffType.NoPickup,
-                "2" => (DropOffType?)DropOffType.PhoneForPickup,
-                "3" => (DropOffType?)DropOffType.DriverForPickup,
+                "1" => (DropOffType?)DropOffType.NoDropOff,
+                "2" => (DropOffType?)DropOffType.PhoneForDropOff,
+                "3" => (DropOffType?)DropOffType.DriverForDropOff,
                 _ => throw new GTFSParseException(name, fieldName, value),
             };
         }

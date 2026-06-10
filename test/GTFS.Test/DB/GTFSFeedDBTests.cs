@@ -138,17 +138,17 @@ namespace GTFS.Test.DB
 
             var result = new List<IGTFSSourceFile>
             {
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"), "agency"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.calendar.txt"), "calendar"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.calendar_dates.txt"), "calendar_dates"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.fare_attributes.txt"), "fare_attributes"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.fare_rules.txt"), "fare_rules"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.frequencies.txt"), "frequencies"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"), "routes"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.shapes.txt"), "shapes"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.stop_times.txt"), "stop_times"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.stops.txt"), "stops"),
-                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.sample_feed.trips.txt"), "trips")
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.agency.txt"), "agency"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.calendar.txt"), "calendar"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.calendar_dates.txt"), "calendar_dates"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.fare_attributes.txt"), "fare_attributes"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.fare_rules.txt"), "fare_rules"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.frequencies.txt"), "frequencies"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.routes.txt"), "routes"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.shapes.txt"), "shapes"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.stop_times.txt"), "stop_times"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.stops.txt"), "stops"),
+                new GTFSSourceFileStream(assembly.GetManifestResourceStream("GTFS.Test.Samples.sample_feed.trips.txt"), "trips")
             };
             return result;
         }

@@ -55,7 +55,7 @@ namespace GTFS.Test
         [Test]
         public void DisposingDirectorySourceClosesSourceFiles()
         {
-            var directoryInfo = new DirectoryInfo(Path.Combine(AssemblyLocation.FullName, "folder-feed"));
+            var directoryInfo = new DirectoryInfo(Path.Combine(AssemblyLocation.FullName, "Samples", "folder-feed"));
 
             try
             {
@@ -80,7 +80,7 @@ namespace GTFS.Test
         [Test]
         public void NotDisposingDirectorySourceKeepsSourceFilesOpen()
         {
-            var directoryInfo = new DirectoryInfo(Path.Combine(AssemblyLocation.FullName, "folder-feed"));
+            var directoryInfo = new DirectoryInfo(Path.Combine(AssemblyLocation.FullName, "Samples", "folder-feed"));
 
             try
             {

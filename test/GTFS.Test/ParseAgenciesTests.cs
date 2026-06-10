@@ -63,7 +63,7 @@ namespace GTFS.Test
             var reader = new GTFSReader<GTFSFeed>();
             var source = new List<IGTFSSourceFile>
             {
-                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agencies_with_id.txt"),"agency")
+                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.Samples.other_feed.agencies_with_id.txt"),"agency")
             };
 
             var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
@@ -84,7 +84,7 @@ namespace GTFS.Test
             var reader = new GTFSReader<GTFSFeed>(true);
             var source = new List<IGTFSSourceFile>
             {
-                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agencies_no_id.txt"),Agency)
+                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.Samples.other_feed.agencies_no_id.txt"),Agency)
             };
 
             void readAction() => reader.Read(source, source.First(x => x.Name.Equals(Agency)));
@@ -105,7 +105,7 @@ namespace GTFS.Test
             var reader = new GTFSReader<GTFSFeed>();
             var source = new List<IGTFSSourceFile>
             {
-                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agency_with_id.txt"),"agency")
+                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.Samples.other_feed.agency_with_id.txt"),"agency")
             };
 
             var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
@@ -127,7 +127,7 @@ namespace GTFS.Test
             var reader = new GTFSReader<GTFSFeed>();
             var source = new List<IGTFSSourceFile>
             {
-                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agency_with_email.txt"),"agency")
+                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.Samples.other_feed.agency_with_email.txt"),"agency")
             };
 
             var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));
@@ -149,7 +149,7 @@ namespace GTFS.Test
             var reader = new GTFSReader<GTFSFeed>();
             var source = new List<IGTFSSourceFile>
             {
-                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.other_feed.agency_no_id.txt"),"agency")
+                new GTFSSourceFileStream(_executingAssembly.GetManifestResourceStream("GTFS.Test.Samples.other_feed.agency_no_id.txt"),"agency")
             };
 
             var feed = reader.Read(source, source.First(x => x.Name.Equals("agency")));

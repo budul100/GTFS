@@ -864,6 +864,13 @@ namespace GTFS
             return value.ToHexColorString();
         }
 
+        /// <summary>
+        /// Schreibt den Wert für ContinuousPickupDropOff als Zeichenkette.
+        /// </summary>
+        /// <param name="name">Der Name der Datei oder Entität.</param>
+        /// <param name="fieldName">Der Name des Feldes.</param>
+        /// <param name="value">Der Wert vom Typ ContinuousPickupDropOff.</param>
+        /// <returns>Die Zeichenkette, die den Wert repräsentiert, oder ein leerer String, wenn kein Wert vorhanden ist.</returns>
         protected virtual string WriteFieldContinuousPickupDropOff(string name, string fieldName, ContinuousPickupDropOff? value)
         {
             if (value is null)
@@ -949,13 +956,13 @@ namespace GTFS
                     case DropOffType.Regular:
                         return "0";
 
-                    case DropOffType.NoPickup:
+                    case DropOffType.NoDropOff:
                         return "1";
 
-                    case DropOffType.PhoneForPickup:
+                    case DropOffType.PhoneForDropOff:
                         return "2";
 
-                    case DropOffType.DriverForPickup:
+                    case DropOffType.DriverForDropOff:
                         return "3";
                 }
             }
@@ -1170,7 +1177,7 @@ namespace GTFS
             var valueContainsEscapedCharacters = value != escapedValue;
 
             var shouldQuote = requireQuotes || valueContainsSeparator || valueContainsEscapedCharacters;
-            if (!shouldQuote) return value;
+            if (!shouldQuote) return value ?? string.Empty;
 
             var valueBuilder = new StringBuilder();
             valueBuilder.Append('"');

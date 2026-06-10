@@ -49,8 +49,8 @@ namespace GTFS.Test
             // build the source
             var source = new List<IGTFSSourceFile>
             {
-                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"),"agency"),
-                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.routes.txt"),"routes")
+                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.agency.txt"),"agency"),
+                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.routes.txt"),"routes")
             };
 
             // execute the reader.
@@ -59,7 +59,7 @@ namespace GTFS.Test
             // test result.
             Assert.That(feed.Routes, Is.Not.Null);
             var routes = feed.Routes.ToList();
-            Assert.That(routes.All(x => x.Description == string.Empty), Is.True);
+            Assert.That(routes.All(x => x.Description == null), Is.True);
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace GTFS.Test
             // build the source
             var source = new List<IGTFSSourceFile>
             {
-                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.sample_feed.agency.txt"),"agency"),
-                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.other_feed.routes.no_desc.txt"),"routes")
+                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.sample_feed.agency.txt"),"agency"),
+                new GTFSSourceFileStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("GTFS.Test.Samples.other_feed.routes.no_desc.txt"),"routes")
             };
 
             // execute the reader.
