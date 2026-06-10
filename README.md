@@ -50,7 +50,7 @@ var feed = reader.Read("path/to/gtfs");
 ```csharp
 foreach (var route in feed.Routes)
 {
-    Console.WriteLine($"{route.Id}: {route.ShortName} – {route.LongName}");
+    Console.WriteLine($"{route.Id}: {route.ShortName} â€“ {route.LongName}");
 }
 
 var stopTimes = feed.StopTimes.GetForTrip("trip_id_here");
