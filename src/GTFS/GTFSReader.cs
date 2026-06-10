@@ -73,8 +73,7 @@ namespace GTFS
             _strict = strict;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            this.DateTimeReader = (dateString) =>
-                DateTime.ParseExact(dateString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            this.DateTimeReader = (dateString) => DateTime.ParseExact(dateString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             this.DateTimeWriter = (date) => date.ToString("yyyyMMdd");
             this.TimeOfDayReader = (timeOfDayString) =>
             {
@@ -481,25 +480,9 @@ namespace GTFS
         /// <returns></returns>
         protected virtual string CleanFieldValue(string value)
         {
-            if (!_strict)
-            {
-                // no cleaning when strict!
-                value = value.Trim();
-                if (value != null && value.Length > 0)
-                {
-                    // test some stuff.
-                    if (value.Length >= 2)
-                    {
-                        // test for quotes
-                        if (value[0] == '"' &&
-                            value[^1] == '"')
-                        {
-                            // quotes on both ends.
-                            return value[1..^1];
-                        }
-                    }
-                }
-            }
+            value = value.Trim();
+            if (value.Length >= 2 && value[0] == '"' && value[^1] == '"')
+                value = value[1..^1];
 
             return value;
         }
@@ -1079,7 +1062,8 @@ namespace GTFS
         /// <returns></returns>
         protected virtual string ParseFieldString(string name, string fieldName, string value)
         {
-            return value.Trim().Replace("\"\"", "\"");
+            return CleanFieldValue(value)
+                .Replace("\"\"", "\"");
         }
 
         /// <summary>
@@ -2327,8 +2311,15 @@ namespace GTFS
             }
             catch (Exception ex)
             {
-                // throw a GFTS parse exception instead.
-                throw new GTFSParseException(name, fieldName, value, ex);
+                if (_strict)
+                {
+                    throw new GTFSParseException(name, fieldName, value, ex);
+                }
+
+                _logger.LogWarning("Failed to parse Date of day field '{FieldName}' in '{Name}' with value '{Value}': {Message}",
+                    fieldName, name, value, ex.Message);
+
+                return DateTime.Today;
             }
         }
 
