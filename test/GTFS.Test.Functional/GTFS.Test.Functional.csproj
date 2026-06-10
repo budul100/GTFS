@@ -7,24 +7,22 @@
 		<PackageId>GTFS.Test.Functional</PackageId>
 		<StartupObject/>
 	</PropertyGroup>
-	
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\GTFS\GTFS.csproj"/>
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<None Update="Osm\profiles\*.lua">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 		<None Update="gtfs1.zip">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-	</ItemGroup>
-	
-	<ItemGroup>
-		<Compile Update="gtfs1.zip">
+		<None Update="gtfs2.zip">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Compile>
+		</None>
 	</ItemGroup>
 
 </Project>

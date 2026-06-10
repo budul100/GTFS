@@ -1,19 +1,20 @@
-﻿using GTFS.IO;
-using System;
-using System.IO;
-using GTFS.IO.Compression;
+﻿using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace GTFS.Test.Functional
 {
     public class Program
     {
+        #region Public Methods
+
         public static void Main(string[] args)
         {
             // enable logging.
-            GTFS.Logging.Logger.LogAction = (o, level, message, parameter) =>
+            using var loggerFactory = LoggerFactory.Create(builder =>
             {
-                Console.WriteLine($"[{o}] {level} - {message}");
-            };
+                builder.AddConsole();
+            });
+            GTFS.Logging.Logger.UseLoggerFactory(loggerFactory);
 
             // read from archive.
             var reader = new GTFSReader<GTFSFeed>();
@@ -27,9 +28,11 @@ namespace GTFS.Test.Functional
             }
             var writer = new GTFSWriter<GTFSFeed>();
             writer.Write(feed, path);
-            
+
             // read from folder.
             feed = reader.Read(path);
         }
+
+        #endregion Public Methods
     }
 }
