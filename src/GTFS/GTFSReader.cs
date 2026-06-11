@@ -2280,13 +2280,18 @@ namespace GTFS
             if (typeof(IComparable).IsAssignableFrom(typeof(TEntity)))
             {
                 var entities = new List<TEntity>();
+
                 while (enumerator.MoveNext())
                 {
+                    if (enumerator.Current.All(x => string.IsNullOrWhiteSpace(x)))
+                        continue;
+
                     var entity = parser.Invoke(feed, header, enumerator.Current);
                     entities.Add(entity);
                 }
 
                 entities.Sort();
+
                 foreach (var entity in entities)
                 {
                     addDelegate.Invoke(entity);
@@ -2296,6 +2301,9 @@ namespace GTFS
             {
                 while (enumerator.MoveNext())
                 {
+                    if (enumerator.Current.All(x => string.IsNullOrWhiteSpace(x)))
+                        continue;
+
                     var entity = parser.Invoke(feed, header, enumerator.Current);
                     addDelegate.Invoke(entity);
                 }

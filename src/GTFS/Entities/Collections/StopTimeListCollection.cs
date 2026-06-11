@@ -277,11 +277,15 @@ namespace GTFS.Entities.Collections
 
         private void AddToIndex(string tripId, int index)
         {
+            if (string.IsNullOrEmpty(tripId))
+                return;
+
             if (!_tripIndex.TryGetValue(tripId, out var indices))
             {
                 indices = [];
                 _tripIndex[tripId] = indices;
             }
+
             indices.Add(index);
         }
 
