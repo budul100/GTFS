@@ -1877,7 +1877,7 @@ namespace GTFS
                     break;
 
                 default:
-                    Console.WriteLine($"File {file.Name} nicht bekannt. Ignoriere");
+                    // Console.WriteLine($"The GTFS data does not contain a {file.Name} file.");
                     break;
             }
         }
