@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<PackageId>budul.GTFS</PackageId>
-		<PackageVersion>4.1.1</PackageVersion>
+		<PackageVersion>4.1.2</PackageVersion>
 		<AssemblyName>GTFS</AssemblyName>
 		<Title>GTFS</Title>
 		<Authors>budul</Authors>
