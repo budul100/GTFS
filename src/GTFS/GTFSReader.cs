@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using GTFS.Entities;
@@ -34,7 +35,7 @@ using GTFS.Logging;
 namespace GTFS
 {
     /// <summary>
-    /// A GTFS reader.
+    /// A GTFS reader that parses GTFS source files and populates a <typeparamref name="T"/> feed object.
     /// </summary>
     public class GTFSReader<T> where T : IGTFSFeed
     {
@@ -52,7 +53,7 @@ namespace GTFS
         #region Public Constructors
 
         /// <summary>
-        /// Creates a new GTFS reader.
+        /// Creates a new GTFS reader using non-strict mode.
         /// </summary>
         public GTFSReader()
             : this(false) { }
@@ -60,14 +61,15 @@ namespace GTFS
         /// <summary>
         /// Creates a new GTFS reader.
         /// </summary>
+        /// <param name="strict">If <c>true</c>, the reader enforces strict GTFS specification compliance.</param>
         public GTFSReader(bool strict)
             : this(strict, Logger.CreateLogger(nameof(GTFSReader<T>))) { }
 
         /// <summary>
         /// Creates a new GTFS reader.
         /// </summary>
-        /// <param name="strict">Flag to set strict behaviour.</param>
-        /// <param name="logger">Logger.</param>
+        /// <param name="strict">If <c>true</c>, the reader enforces strict GTFS specification compliance.</param>
+        /// <param name="logger">The logger to use for diagnostic output.</param>
         public GTFSReader(bool strict, ILogger logger)
         {
             _strict = strict;
@@ -130,16 +132,16 @@ namespace GTFS
         #region Protected Delegates
 
         /// <summary>
-        /// A delegate to add entities.
+        /// A delegate to add an entity to a feed.
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="entity"></param>
+        /// <typeparam name="TEntity">The type of entity to add.</typeparam>
+        /// <param name="entity">The entity to add.</param>
         protected delegate void EntityAddDelegate<TEntity>(TEntity entity);
 
         /// <summary>
-        /// A delegate for parsing methods per entity.
+        /// A delegate for parsing a single data row into a GTFS entity.
         /// </summary>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
+        /// <typeparam name="TEntity">The type of entity to parse.</typeparam>
         protected delegate TEntity EntityParseDelegate<TEntity>(T feed, GTFSSourceFileHeader header, string[] data)
             where TEntity : GTFSEntity;
 
@@ -188,7 +190,7 @@ namespace GTFS
         public FieldMap FeedInfoMap { get; private set; }
 
         /// <summary>
-        /// Gets the frequence fieldmap.
+        /// Gets the frequency fieldmap.
         /// </summary>
         public FieldMap FrequencyMap { get; private set; }
 
@@ -252,9 +254,12 @@ namespace GTFS
         #region Public Methods
 
         /// <summary>
-        /// Returns the file dependency-tree.
+        /// Returns the file dependency tree, mapping each GTFS file name to the set of file names it depends on.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A dictionary where each key is a GTFS file name and the value is the set of file names
+        /// that must be read before it.
+        /// </returns>
         public virtual Dictionary<string, HashSet<string>> GetDependencyTree()
         {
             var dependencyTree = new Dictionary<string, HashSet<string>>();
@@ -290,9 +295,9 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Returns a collection of all required files.
+        /// Returns a collection of all required GTFS file names.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A collection of file names that must be present in the GTFS source.</returns>
         public virtual IEnumerable<string> GetRequiredFiles()
         {
             return ["agency", "stops", "routes", "trips", "stop_times"];
@@ -302,7 +307,10 @@ namespace GTFS
         /// Returns a collection of required file sets. Each file set contains a
         /// number of files of which at least one should be in the source files set.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A collection of file name arrays, where each array represents a group of files
+        /// of which at least one must be present in the source.
+        /// </returns>
         public virtual IEnumerable<string[]> GetRequiredFileSets()
         {
             return
@@ -312,15 +320,15 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Reads the specified GTFS source into the given GTFS feed object.
+        /// Reads all files from the specified GTFS source into the given feed object,
+        /// respecting the file dependency order.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="feed"></param>
-        /// <returns></returns>
-        public T Read(T feed, IEnumerable<IGTFSSourceFile> source)
+        /// <param name="feed">The GTFS feed object to populate.</param>
+        /// <param name="source">The collection of GTFS source files to read.</param>
+        /// <param name="progress">An optional progress reporter receiving values between 0.0 and 1.0.</param>
+        /// <returns>The populated GTFS feed object.</returns>
+        public T Read(T feed, IEnumerable<IGTFSSourceFile> source, IProgress<double> progress = null)
         {
-            source = source.ToArray(); // optimization in order not to enumerate multiple times
-
             // check if all required files are present.
             if (_strict)
             {
@@ -349,13 +357,23 @@ namespace GTFS
                 }
             }
 
+            var sourceArray = source.ToArray();
+
+            // File sizes via reflection on path — not available here.
+            // Use uniform file weighting: each file = 1/n of progress.
+            // For record-level granularity within files, throttled reports come from Read<TEntity>.
+            int filesTotal = sourceArray.Length;
+            int filesCompleted = 0;
+
             // read files one-by-one and in the correct order based on the dependency tree.
             var readFiles = this.ReadCustomFilesBefore();
             var dependencyTree = this.GetDependencyTree();
-            while (readFiles.Count < source.Count())
+
+            while (readFiles.Count < sourceArray.Length)
             {
                 // select a new file based on the dependency tree.
                 IGTFSSourceFile selectedFile = null;
+
                 foreach (var file in source)
                 {
                     if (!readFiles.Contains(file.Name))
@@ -388,20 +406,24 @@ namespace GTFS
                 }
 
                 // read the file.
-                this.Read(selectedFile, feed);
+                this.Read(selectedFile, feed, progress, filesCompleted, filesTotal);
+
+                filesCompleted++;
                 readFiles.Add(selectedFile.Name);
             }
+
+            progress?.Report(1.0);
 
             return feed;
         }
 
         /// <summary>
-        /// Reads one file and it's dependencies from the specified GTFS source into the given GTFS feed object.
+        /// Reads one file and its dependencies from the specified GTFS source into the given feed object.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="source"></param>
-        /// <param name="file"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed object to populate.</param>
+        /// <param name="source">The collection of all available GTFS source files.</param>
+        /// <param name="file">The specific file to read, along with its dependencies.</param>
+        /// <returns>The populated GTFS feed object.</returns>
         public T Read(T feed, IEnumerable<IGTFSSourceFile> source, IGTFSSourceFile file)
         {
             // build the files-to-read list from the dependencies.
@@ -453,12 +475,12 @@ namespace GTFS
         #region Protected Methods
 
         /// <summary>
-        /// Checks if a required field is actually in the header.
+        /// Checks whether a required field is present in the file header and throws an exception if it is missing.
         /// </summary>
-        /// <param name="header"></param>
-        /// <param name="name"></param>
-        /// <param name="fieldMap"></param>
-        /// <param name="column"></param>
+        /// <param name="header">The source file header to check.</param>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldMap">The field map used to resolve the actual column name.</param>
+        /// <param name="column">The expected column name to verify.</param>
         protected virtual void CheckRequiredField(GTFSSourceFileHeader header, string name, FieldMap fieldMap,
             string column)
         {
@@ -474,10 +496,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Cleans a field-value for parsing into a boolean, int, double or date.
+        /// Cleans a raw field value for subsequent parsing into a boolean, integer, double, or date.
+        /// Trims surrounding whitespace and removes enclosing double quotes.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="value">The raw field value to clean.</param>
+        /// <returns>
+        /// The cleaned field value, or <c>null</c> if the value is empty or consists only of quote characters.
+        /// </returns>
         protected virtual string CleanFieldValue(string value)
         {
             value = value.Trim();
@@ -491,12 +516,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses an agency row.
+        /// Parses a single agency row from a GTFS source file into an <see cref="Agency"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Agency"/> entity.</returns>
         protected virtual Agency ParseAgency(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -522,12 +547,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses an agency field.
+        /// Parses a single agency field and assigns the parsed value to the corresponding property of the entity.
         /// </summary>
-        /// <param name="header"></param>
-        /// <param name="agency"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="agency">The agency entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseAgencyField(GTFSSourceFileHeader header, Agency agency, string fieldName,
             string value)
         {
@@ -568,12 +593,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a calendar date row.
+        /// Parses a single calendar date row from a GTFS source file into a <see cref="CalendarDate"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="CalendarDate"/> entity.</returns>
         protected virtual CalendarDate ParseCalendarDate(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -592,13 +617,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single calendar date field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="calendarDate"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="calendarDate">The calendar date entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseCalendarDateField(T feed, GTFSSourceFileHeader header, CalendarDate calendarDate,
             string fieldName, string value)
         {
@@ -620,13 +645,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single calendar field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="calendar"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="calendar">The calendar entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseCalendarField(T feed, GTFSSourceFileHeader header, Calendar calendar,
             string fieldName, string value)
         {
@@ -677,12 +702,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a calendar row.
+        /// Parses a single calendar row from a GTFS source file into a <see cref="Calendar"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Calendar"/> entity.</returns>
         protected virtual Calendar ParseCalender(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -708,12 +733,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a fare attribute row.
+        /// Parses a single fare attribute row from a GTFS source file into a <see cref="FareAttribute"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="FareAttribute"/> entity.</returns>
         protected virtual FareAttribute ParseFareAttribute(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -734,13 +759,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single fare attribute field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="fareAttribute"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="fareAttribute">The fare attribute entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseFareAttributeField(T feed, GTFSSourceFileHeader header, FareAttribute fareAttribute,
             string fieldName, string value)
         {
@@ -777,12 +802,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a fare rule row.
+        /// Parses a single fare rule row from a GTFS source file into a <see cref="FareRule"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="FareRule"/> entity.</returns>
         protected virtual FareRule ParseFareRule(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -799,13 +824,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single fare rule field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="fareRule"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="fareRule">The fare rule entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseFareRuleField(T feed, GTFSSourceFileHeader header, FareRule fareRule,
             string fieldName, string value)
         {
@@ -834,12 +859,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a feed info row.
+        /// Parses a single feed info row from a GTFS source file into a <see cref="FeedInfo"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="FeedInfo"/> entity.</returns>
         protected virtual FeedInfo ParseFeedInfo(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -858,9 +883,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a color field into an argb value.
+        /// Parses a color field value into an ARGB integer.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value representing a color (e.g., a hex string).</param>
+        /// <returns>The ARGB color value as an integer, or <c>null</c> if the value is empty.</returns>
         protected virtual int? ParseFieldColor(string name, string fieldName, string value)
         {
             // clean first.
@@ -878,12 +906,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a double field.
+        /// Parses a floating-point field value.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value.</param>
+        /// <returns>The parsed <see cref="double"/> value, or <c>null</c> if the value is empty or whitespace.</returns>
         protected virtual double? ParseFieldDouble(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -916,12 +944,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses an exception-type field.
+        /// Parses an exception type field value into an <see cref="ExceptionType"/> enumeration value.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value (<c>"1"</c> = Added, <c>"2"</c> = Removed).</param>
+        /// <returns>The corresponding <see cref="ExceptionType"/> value.</returns>
         protected virtual ExceptionType ParseFieldExceptionType(string name, string fieldName, string value)
         {
             // clean first.
@@ -939,12 +967,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a positive integer field.
+        /// Parses an integer field value.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value.</param>
+        /// <returns>The parsed <see cref="int"/> value, or <c>null</c> if the value is empty or whitespace.</returns>
         protected virtual int? ParseFieldInt(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -966,12 +994,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a payment-method type field.
+        /// Parses a payment method type field value into a <see cref="PaymentMethodType"/> enumeration value.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value (<c>"0"</c> = OnBoard, <c>"1"</c> = BeforeBoarding).</param>
+        /// <returns>The corresponding <see cref="PaymentMethodType"/> value.</returns>
         protected virtual PaymentMethodType ParseFieldPaymentMethodType(string name, string fieldName, string value)
         {
             // clean first.
@@ -989,9 +1017,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route-type field.
+        /// Parses a route type field value into a <see cref="RouteTypeExtended"/> enumeration value.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value representing the route type code.</param>
+        /// <returns>The corresponding <see cref="RouteTypeExtended"/> value.</returns>
         protected virtual RouteTypeExtended ParseFieldRouteType(string name, string fieldName, string value)
         {
             // clean first.
@@ -1057,12 +1088,14 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a string-field.
+        /// Parses a string field value by trimming surrounding whitespace.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value.</param>
+        /// <returns>
+        /// The trimmed string value, or <c>null</c> if the value is empty or consists only of quote characters.
+        /// </returns>
         protected virtual string ParseFieldString(string name, string fieldName, string value)
         {
             value = value.Trim();
@@ -1073,12 +1106,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a transfer type field.
+        /// Parses a transfer type field value into a <see cref="TransferType"/> enumeration value.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value.</param>
+        /// <returns>The corresponding <see cref="TransferType"/> value.</returns>
         protected virtual TransferType ParseFieldTransferType(string name, string fieldName, string value)
         {
             // clean first.
@@ -1102,12 +1135,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a positive integer field.
+        /// Parses an unsigned integer field value.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="name">The name of the source file, used in error messages.</param>
+        /// <param name="fieldName">The name of the field being parsed.</param>
+        /// <param name="value">The raw field value.</param>
+        /// <returns>The parsed <see cref="uint"/> value, or <c>null</c> if the value is empty or whitespace.</returns>
         protected virtual uint? ParseFieldUInt(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -1129,12 +1162,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a frequency row.
+        /// Parses a single frequency row from a GTFS source file into a <see cref="Frequency"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Frequency"/> entity.</returns>
         protected virtual Frequency ParseFrequency(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1154,13 +1187,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single frequency field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="frequency"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="frequency">The frequency entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseFrequencyField(T feed, GTFSSourceFileHeader header, Frequency frequency,
             string fieldName, string value)
         {
@@ -1193,12 +1226,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a level row.
+        /// Parses a single level row from a GTFS source file into a <see cref="Level"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Level"/> entity.</returns>
         protected virtual Level ParseLevel(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1217,12 +1250,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a level field.
+        /// Parses a single level field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="header"></param>
-        /// <param name="level"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="level">The level entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseLevelField(GTFSSourceFileHeader header, Level level, string fieldName, string value)
         {
             switch (fieldName)
@@ -1242,12 +1275,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a pathway row.
+        /// Parses a single pathway row from a GTFS source file into a <see cref="Pathway"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Pathway"/> entity.</returns>
         protected virtual Pathway ParsePathway(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1269,12 +1302,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a pathway field.
+        /// Parses a single pathway field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="header"></param>
-        /// <param name="pathway"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="pathway">The pathway entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParsePathwayField(GTFSSourceFileHeader header, Pathway pathway, string fieldName,
             string value)
         {
@@ -1332,12 +1365,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route row.
+        /// Parses a single route row from a GTFS source file into a <see cref="Route"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Route"/> entity.</returns>
         protected virtual Route ParseRoute(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1358,13 +1391,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single route field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="route"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="route">The route entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseRouteField(T feed, GTFSSourceFileHeader header, Route route, string fieldName,
             string value)
         {
@@ -1417,12 +1450,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a shape row.
+        /// Parses a single shape row from a GTFS source file into a <see cref="Shape"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Shape"/> entity.</returns>
         protected virtual Shape ParseShape(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1442,13 +1475,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single shape field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="shape"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="shape">The shape entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseShapeField(T feed, GTFSSourceFileHeader header, Shape shape, string fieldName,
             string value)
         {
@@ -1477,12 +1510,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a stop row.
+        /// Parses a single stop row from a GTFS source file into a <see cref="Stop"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Stop"/> entity.</returns>
         protected virtual Stop ParseStop(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1502,13 +1535,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a stop field.
+        /// Parses a single stop field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="stop"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="stop">The stop entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseStopField(T feed, GTFSSourceFileHeader header, Stop stop, string fieldName,
             string value)
         {
@@ -1591,12 +1624,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a stop time row.
+        /// Parses a single stop time row from a GTFS source file into a <see cref="StopTime"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="StopTime"/> entity.</returns>
         protected virtual StopTime ParseStopTime(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1617,13 +1650,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single stop time field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="stopTime"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="stopTime">The stop time entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseStopTimeField(T feed, GTFSSourceFileHeader header, StopTime stopTime,
             string fieldName, string value)
         {
@@ -1682,12 +1715,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a transfer row.
+        /// Parses a single transfer row from a GTFS source file into a <see cref="Transfer"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Transfer"/> entity.</returns>
         protected virtual Transfer ParseTransfer(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1706,13 +1739,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a transfer field.
+        /// Parses a single transfer field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="transfer"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="transfer">The transfer entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseTransferField(T feed, GTFSSourceFileHeader header, Transfer transfer,
             string fieldName, string value)
         {
@@ -1737,12 +1770,12 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a trip row.
+        /// Parses a single trip row from a GTFS source file into a <see cref="Trip"/> entity.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="data">The raw field values for the current row.</param>
+        /// <returns>A populated <see cref="Trip"/> entity.</returns>
         protected virtual Trip ParseTrip(T feed, GTFSSourceFileHeader header, string[] data)
         {
             // check required fields.
@@ -1761,13 +1794,13 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Parses a route field.
+        /// Parses a single trip field and assigns the parsed value to the corresponding property.
         /// </summary>
-        /// <param name="feed"></param>
-        /// <param name="header"></param>
-        /// <param name="trip"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
+        /// <param name="feed">The GTFS feed being populated.</param>
+        /// <param name="header">The file header containing column index information.</param>
+        /// <param name="trip">The trip entity to populate.</param>
+        /// <param name="fieldName">The name of the field to parse.</param>
+        /// <param name="value">The raw field value.</param>
         protected virtual void ParseTripField(T feed, GTFSSourceFileHeader header, Trip trip, string fieldName,
             string value)
         {
@@ -1812,68 +1845,72 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Reads the given file and adds the result to the feed.
+        /// Reads the given GTFS source file, parses all rows, and adds the resulting entities to the feed.
+        /// Reports progress relative to the file's position within the overall file set.
         /// </summary>
-        /// <param name="file"></param>
-        /// <param name="feed"></param>
-        protected virtual void Read(IGTFSSourceFile file, T feed)
+        /// <param name="file">The GTFS source file to read.</param>
+        /// <param name="feed">The GTFS feed object to populate.</param>
+        /// <param name="progress">An optional progress reporter receiving values between 0.0 and 1.0.</param>
+        /// <param name="filesCompleted">The number of files already processed before this one.</param>
+        /// <param name="filesTotal">The total number of files to process.</param>
+        protected virtual void Read(IGTFSSourceFile file, T feed, IProgress<double> progress, int filesCompleted, int filesTotal)
         {
             switch (file.Name.ToLower())
             {
                 case "agency":
-                    this.Read(file, feed, this.ParseAgency, feed.Agencies.Add);
+                    this.Read(file, feed, this.ParseAgency, feed.Agencies.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "calendar":
-                    this.Read(file, feed, this.ParseCalender, feed.Calendars.Add);
+                    this.Read(file, feed, this.ParseCalender, feed.Calendars.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "calendar_dates":
-                    this.Read(file, feed, this.ParseCalendarDate, feed.CalendarDates.Add);
+                    this.Read(file, feed, this.ParseCalendarDate, feed.CalendarDates.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "fare_attributes":
-                    this.Read(file, feed, this.ParseFareAttribute, feed.FareAttributes.Add);
+                    this.Read(file, feed, this.ParseFareAttribute, feed.FareAttributes.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "fare_rules":
-                    this.Read(file, feed, this.ParseFareRule, feed.FareRules.Add);
+                    this.Read(file, feed, this.ParseFareRule, feed.FareRules.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "feed_info":
-                    this.Read(file, feed, this.ParseFeedInfo, feed.SetFeedInfo);
+                    this.Read(file, feed, this.ParseFeedInfo, feed.SetFeedInfo, progress, filesCompleted, filesTotal);
                     break;
 
                 case "routes":
-                    this.Read(file, feed, this.ParseRoute, feed.Routes.Add);
+                    this.Read(file, feed, this.ParseRoute, feed.Routes.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "shapes":
-                    this.Read(file, feed, this.ParseShape, feed.Shapes.Add);
+                    this.Read(file, feed, this.ParseShape, feed.Shapes.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "stops":
-                    this.Read(file, feed, this.ParseStop, feed.Stops.Add);
+                    this.Read(file, feed, this.ParseStop, feed.Stops.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "stop_times":
-                    this.Read(file, feed, this.ParseStopTime, feed.StopTimes.Add);
+                    this.Read(file, feed, this.ParseStopTime, feed.StopTimes.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "trips":
-                    this.Read(file, feed, this.ParseTrip, feed.Trips.Add);
+                    this.Read(file, feed, this.ParseTrip, feed.Trips.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "transfers":
-                    this.Read(file, feed, this.ParseTransfer, feed.Transfers.Add);
+                    this.Read(file, feed, this.ParseTransfer, feed.Transfers.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "frequencies":
-                    this.Read(file, feed, this.ParseFrequency, feed.Frequencies.Add);
+                    this.Read(file, feed, this.ParseFrequency, feed.Frequencies.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 case "levels":
-                    this.Read(file, feed, this.ParseLevel, feed.Levels.Add);
+                    this.Read(file, feed, this.ParseLevel, feed.Levels.Add, progress, filesCompleted, filesTotal);
                     break;
 
                 default:
@@ -1883,9 +1920,20 @@ namespace GTFS
         }
 
         /// <summary>
-        /// Reads custom files and returns a list of files that have already been read.
+        /// Reads the given GTFS source file and adds all parsed entities to the feed.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="file">The GTFS source file to read.</param>
+        /// <param name="feed">The GTFS feed object to populate.</param>
+        protected virtual void Read(IGTFSSourceFile file, T feed)
+            => this.Read(file: file, feed: feed, progress: null, filesCompleted: 0, filesTotal: 1);
+
+        /// <summary>
+        /// Returns the set of file names that are considered already read before the standard read loop begins.
+        /// Override this method in a subclass to pre-populate the set with any custom files processed beforehand.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="HashSet{T}"/> of file names that have already been processed.
+        /// </returns>
         protected virtual HashSet<string> ReadCustomFilesBefore()
         {
             return [];
@@ -1929,13 +1977,6 @@ namespace GTFS
             }
         }
 
-        /// <summary>
-        /// Parses an accessibility-type field.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private WheelchairAccessibilityType? ParseFieldAccessibilityType(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -1960,13 +2001,6 @@ namespace GTFS
             };
         }
 
-        /// <summary>
-        /// Parses a boolean field.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private bool? ParseFieldBool(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2003,13 +2037,6 @@ namespace GTFS
             };
         }
 
-        /// <summary>
-        /// Parses a direction-type field.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private DirectionType? ParseFieldDirectionType(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2032,13 +2059,6 @@ namespace GTFS
             };
         }
 
-        /// <summary>
-        /// Parses a drop-off-type field.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private DropOffType? ParseFieldDropOffType(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2065,13 +2085,6 @@ namespace GTFS
             };
         }
 
-        /// <summary>
-        /// Parses a direction-type field.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private IsBidirectional? ParseFieldIsBidirectional(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2094,13 +2107,6 @@ namespace GTFS
             };
         }
 
-        /// <summary>
-        /// Parses a location-type field.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private LocationType? ParseFieldLocationType(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2145,13 +2151,6 @@ namespace GTFS
             return null;
         }
 
-        /// <summary>
-        /// Parses a direction-type field.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private PathwayMode? ParseFieldPathwayMode(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2184,13 +2183,6 @@ namespace GTFS
             };
         }
 
-        /// <summary>
-        /// Parses a pickup-type field.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private PickupType? ParseFieldPickupType(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2217,10 +2209,6 @@ namespace GTFS
             };
         }
 
-        /// <summary>
-        /// Parses the timepoing field.
-        /// </summary>
-        /// <returns></returns>
         private TimePointType ParseFieldTimepointType(string name, string fieldName, string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -2243,16 +2231,9 @@ namespace GTFS
             };
         }
 
-        /// <summary>
-        /// Reads the agency file.
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="file"></param>
-        /// <param name="feed"></param>
-        /// <param name="parser"></param>
-        /// <param name="addDelegate"></param>
         private void Read<TEntity>(IGTFSSourceFile file, T feed, EntityParseDelegate<TEntity> parser,
-            EntityAddDelegate<TEntity> addDelegate)
+                                                                                                  EntityAddDelegate<TEntity> addDelegate, IProgress<double> progress, int filesCompleted,
+            int filesTotal)
             where TEntity : GTFSEntity
         {
             // set line preprocessor if any.
@@ -2276,6 +2257,30 @@ namespace GTFS
 
             var header = new GTFSSourceFileHeader(file.Name, headerColumns);
 
+            // Progress slice for this file: [fileStart, fileEnd) within 0.0-1.0
+            var fileStart = (double)filesCompleted / filesTotal;
+            var fileEnd = (double)(filesCompleted + 1) / filesTotal;
+
+            long recordCount = 0;
+            long lastReportMs = -500; // report immediately on first tick
+
+            var stopwatch = progress != default
+                ? Stopwatch.StartNew()
+                : default;
+
+            void ReportIfDue()
+            {
+                if (progress == null) return;
+                if (stopwatch!.ElapsedMilliseconds - lastReportMs < 500) return;
+
+                // Approaches fileEnd asymptotically: fast early progress, slows near end
+                var withinFile = 1.0 - (1.0 / (1.0 + recordCount / 50_000.0));
+                var watchTime = fileStart + withinFile * (fileEnd - fileStart);
+                progress.Report(watchTime);
+
+                lastReportMs = stopwatch.ElapsedMilliseconds;
+            }
+
             // read fields and keep them sorted.
             if (typeof(IComparable).IsAssignableFrom(typeof(TEntity)))
             {
@@ -2283,11 +2288,14 @@ namespace GTFS
 
                 while (enumerator.MoveNext())
                 {
-                    if (enumerator.Current.All(x => string.IsNullOrWhiteSpace(x)))
+                    if (enumerator.Current.All(string.IsNullOrWhiteSpace))
                         continue;
 
                     var entity = parser.Invoke(feed, header, enumerator.Current);
                     entities.Add(entity);
+
+                    recordCount++;
+                    ReportIfDue();
                 }
 
                 entities.Sort();
@@ -2306,17 +2314,16 @@ namespace GTFS
 
                     var entity = parser.Invoke(feed, header, enumerator.Current);
                     addDelegate.Invoke(entity);
+
+                    recordCount++;
+                    ReportIfDue();
                 }
             }
+
+            // File done: report fileEnd
+            progress?.Report(fileEnd);
         }
 
-        /// <summary>
-        /// Reads a datetime.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         private DateTime ReadDateTime(string name, string fieldName, string value)
         {
             try
@@ -2337,10 +2344,6 @@ namespace GTFS
             }
         }
 
-        /// <summary>
-        /// Reads a timeofday.
-        /// </summary>
-        /// <returns></returns>
         private TimeOfDay? ReadTimeOfDay(string name, string fieldName, string value)
         {
             try
