@@ -70,6 +70,20 @@ writer.Write(feed, target);
 Logger.UseLoggerFactory(loggerFactory);
 ```
 
+**Reading with progress feedback:**
+
+```csharp
+var reader = new GTFSReader<GTFSFeed>();
+var feed = reader.Read("path/to/gtfs", progress: new Progress<double>(p =>
+{
+    Console.WriteLine($"Reading... {p:P0}");
+}));
+```
+
+The `progress` parameter is optional and accepts any `IProgress<double>` implementation.
+Reported values range from `0.0` to `1.0`, with `1.0` guaranteed as the final value.
+Progress is reported at most every 500 ms to avoid overhead on large files such as `stop_times.txt`.
+
 ## GTFS Spec Coverage
 
 ### Supported files
